@@ -66,20 +66,21 @@ python manage.py createsuperuser
 
 ## Free demo hosting (Render)
 
-The repository includes a Render Blueprint in `render.yaml`. Deployment needs:
+The repository includes a Render Blueprint in `render.yaml`. It creates a free
+web service and a free PostgreSQL database for a demo deployment:
 
 1. Push the project to a GitHub repository and connect it to Render.
-2. Provide a PostgreSQL `DATABASE_URL` from a free database provider when Render asks.
+2. Click **Deploy Blueprint**; Render connects the web service to its PostgreSQL database.
 3. To keep uploaded profile photos and skill videos, create an S3-compatible bucket
    (Cloudflare R2 has a monthly free allowance) and set the `KAAMSETU_R2_*` values
    listed in `render.yaml`. Keep the bucket private; the app generates signed media
    links when it serves uploaded files.
-4. Select **Apply** in Render to build and deploy. Render creates the site at its
-   `onrender.com` address.
+4. When the build finishes, open the service's `onrender.com` address.
 
 Render's free web service sleeps when idle and its local filesystem is temporary.
-Do not use local SQLite or local `media/` storage for deployed user data. Keep
-the database on PostgreSQL and configure object storage before accepting uploads.
+Free Render Postgres expires after 30 days and the local `media/` folder is temporary,
+so use this setup for a demo only. Configure separate durable database and object
+storage before accepting real user data or uploads.
 
 ---
 

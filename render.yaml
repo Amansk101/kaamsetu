@@ -17,12 +17,12 @@ services:
       - key: KAAMSETU_SECURE_SSL
         value: "true"
       - key: DATABASE_URL
-        sync: false
-      - key: KAAMSETU_R2_BUCKET
-        sync: false
-      - key: KAAMSETU_R2_ENDPOINT
-        sync: false
-      - key: KAAMSETU_R2_ACCESS_KEY_ID
-        sync: false
-      - key: KAAMSETU_R2_SECRET_ACCESS_KEY
-        sync: false
+        fromDatabase:
+          name: kaamsetu-db
+          property: connectionString
+
+databases:
+  - name: kaamsetu-db
+    databaseName: kaamsetu
+    user: kaamsetu
+    plan: free
