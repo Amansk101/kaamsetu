@@ -146,12 +146,13 @@ class PasswordSecurityTests(TestCase):
         self.assertContains(response, 'Wrong email or password. Please check and try again.')
         self.assertNotContains(response, 'No account exists')
 
-    def test_homepage_uses_static_hero_artwork_without_background_video(self):
+    def test_homepage_uses_background_video_with_static_poster_fallback(self):
         response = self.client.get(reverse('core:landing'))
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'class="hero-poster"')
+        self.assertContains(response, 'videos/kaamsetu-home.mp4')
         self.assertContains(response, 'skilled-trades-team.webp')
-        self.assertNotContains(response, '<video')
+        self.assertContains(response, 'data-background-video')
 
     @override_settings(EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend')
     def test_reset_request_does_not_reveal_whether_email_exists(self):

@@ -1,4 +1,5 @@
 from django.contrib import messages
+from django.contrib.staticfiles import finders
 from django.core.paginator import Paginator
 from django.db.models import Count, Q
 from django.shortcuts import get_object_or_404, redirect, render
@@ -82,6 +83,7 @@ def dashboard(request):
     ]
 
     return render(request, 'employers/dashboard.html', {
+        'dashboard_video': bool(finders.find('videos/kaamsetu-employer-dashboard.mp4')),
         'profile': profile,
         'jobs': jobs,
         'applications': applications,

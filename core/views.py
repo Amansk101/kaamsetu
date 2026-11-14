@@ -10,7 +10,12 @@ SESSION_KEY = 'ks_language'
 
 def landing(request):
     """Landing page — the public marketing home."""
-    return render(request, 'core/landing.html')
+    from django.contrib.staticfiles import finders
+
+    hero_video = 'videos/kaamsetu-home.mp4'
+    if not finders.find(hero_video):
+        hero_video = None
+    return render(request, 'core/landing.html', {'hero_video': hero_video})
 
 
 def select_role(request):

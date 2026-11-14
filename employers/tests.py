@@ -22,7 +22,7 @@ class EmployerDashboardTests(TestCase):
         self.assertContains(response, 'Application pipeline')
         self.assertContains(response, 'No applications yet')
         self.assertContains(response, 'Find Workers')
-        self.assertNotContains(response, 'data-background-video')
+        self.assertContains(response, 'videos/kaamsetu-employer-dashboard.mp4')
         self.assertContains(response, 'hiring-conversation.webp')
 
     def test_my_jobs_uses_real_records_and_per_job_application_counts(self):

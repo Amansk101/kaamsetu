@@ -6,6 +6,12 @@
 
 {% block dashboard_content %}
 <section class="welcome-banner welcome-banner--video">
+  {% if dashboard_video %}
+  <video class="dashboard-background-video" autoplay muted loop playsinline preload="none"
+         poster="{% static 'images/skilled-trades-team.webp' %}"
+         data-background-video data-src="{% static 'videos/kaamsetu-worker-dashboard.mp4' %}"
+         aria-hidden="true" tabindex="-1"></video>
+  {% endif %}
   <div class="dashboard-video-overlay" aria-hidden="true"></div>
   <div>
     <span class="eyebrow">{% t "Your next opportunity starts here" %}</span>

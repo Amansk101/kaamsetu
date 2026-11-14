@@ -107,6 +107,56 @@
     // --- Lucide icons (same icon set as the React reference app) ---------
     renderIcons();
 
+    // --- Lazy background videos ------------------------------------------
+    var backgroundVideos = Array.prototype.slice.call(
+      document.querySelectorAll('[data-background-video]')
+    );
+    var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+    var saveData = Boolean(connection && connection.saveData);
+
+    function playBackgroundVideo(video) {
+      if (document.hidden || reduceMotion || saveData) return;
+      if (!video.getAttribute('src')) {
+        var source = video.getAttribute('data-src');
+        if (!source) return;
+        video.setAttribute('src', source);
+        video.load();
+      }
+      var playback = video.play();
+      if (playback && typeof playback.catch === 'function') playback.catch(function () {});
+    }
+
+    backgroundVideos.forEach(function (video) {
+      video.muted = true;
+      video.defaultMuted = true;
+      video.addEventListener('playing', function () { video.classList.add('is-ready'); });
+      video.addEventListener('error', function () {
+        video.classList.remove('is-ready');
+        video.classList.add('is-video-failed');
+      });
+    });
+
+    if (!reduceMotion && !saveData && backgroundVideos.length) {
+      if ('IntersectionObserver' in window) {
+        var videoObserver = new IntersectionObserver(function (entries) {
+          entries.forEach(function (entry) {
+            if (entry.isIntersecting) playBackgroundVideo(entry.target);
+            else entry.target.pause();
+          });
+        }, { rootMargin: '80px 0px', threshold: 0.01 });
+        backgroundVideos.forEach(function (video) { videoObserver.observe(video); });
+      } else {
+        backgroundVideos.forEach(playBackgroundVideo);
+      }
+      document.addEventListener('visibilitychange', function () {
+        backgroundVideos.forEach(function (video) {
+          if (document.hidden) video.pause();
+          else playBackgroundVideo(video);
+        });
+      });
+    }
+
     // --- Mobile nav menu -------------------------------------------------
     var toggle = document.querySelector('[data-menu-toggle]');
     var menu = document.querySelector('[data-menu]');

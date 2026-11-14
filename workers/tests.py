@@ -177,7 +177,7 @@ class ApprovalFlowTests(TestCase):
         self.assertContains(response, 'Application progress')
         self.assertContains(response, 'No application activity yet')
         self.assertContains(response, 'AI Skill Analysis')
-        self.assertNotContains(response, 'data-background-video')
+        self.assertContains(response, 'videos/kaamsetu-worker-dashboard.mp4')
         self.assertContains(response, 'skilled-trades-team.webp')
 
     def test_dashboard_recommendation_uses_real_job_fields_and_details_control(self):

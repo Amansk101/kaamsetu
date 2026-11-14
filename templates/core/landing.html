@@ -7,6 +7,12 @@
 <main>
   <section class="landing-hero" aria-label="{% t 'KaamSetu introduction' %}">
     <div class="hero-poster" aria-hidden="true"></div>
+    {% if hero_video %}
+      <video class="landing-hero-video" autoplay muted loop playsinline preload="none"
+             poster="{% static 'images/skilled-trades-team.webp' %}"
+             data-background-video data-src="{% static hero_video %}"
+             aria-hidden="true" tabindex="-1"></video>
+    {% endif %}
     <div class="hero-grain" aria-hidden="true"></div>
 
     <div class="landing-hero-content">

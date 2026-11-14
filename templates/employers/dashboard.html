@@ -6,6 +6,12 @@
 
 {% block dashboard_content %}
 <section class="employer-welcome employer-welcome--video">
+  {% if dashboard_video %}
+  <video class="dashboard-background-video" autoplay muted loop playsinline preload="none"
+         poster="{% static 'images/hiring-conversation.webp' %}"
+         data-background-video data-src="{% static 'videos/kaamsetu-employer-dashboard.mp4' %}"
+         aria-hidden="true" tabindex="-1"></video>
+  {% endif %}
   <div>
     <span class="eyebrow">{% t "Hire with confidence" %}</span>
     <h2>{% t "Find the right skills, closer to home." %}</h2>
