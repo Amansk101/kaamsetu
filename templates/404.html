@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Page not found" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card">
+    <span class="eyebrow">404</span>
+    <h1>{% t "Page not found" %}</h1>
+    <p class="auth-intro">{% t "The page you are looking for is not available. It may have been moved or removed." %}</p>
+    <div class="auth-form">
+      <a class="button auth-submit" href="{% url 'core:landing' %}">{% t "Return home" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+  </section>
+</main>
+{% endblock %}

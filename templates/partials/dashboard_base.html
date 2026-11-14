@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block nav %}{% endblock %}
+{% block footer %}{% endblock %}
+
+{% block content %}
+<div class="dashboard-layout">
+  {% include 'partials/sidebar.html' %}
+  <button class="dashboard-sidebar-backdrop" type="button" data-dashboard-sidebar-close aria-label="Close navigation"></button>
+  <div class="dashboard-main">
+    <header class="dashboard-topbar">
+      <div>
+        <button class="dashboard-sidebar-toggle" type="button" data-dashboard-sidebar-toggle aria-label="Toggle navigation" aria-expanded="false" aria-controls="dashboard-sidebar"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#526E50" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg></button>
+        <span class="dashboard-context"><i data-lucide="{% if user.is_employer %}building-2{% else %}hard-hat{% endif %}" aria-hidden="true"></i>{% if user.is_employer %}{% t "EMPLOYER PORTAL" %}{% else %}{% t "WORKER PORTAL" %}{% endif %}</span>
+        <h1>{% block dashboard_title %}{% t "Dashboard" %}{% endblock %}</h1>
+      </div>
+      <div class="dashboard-topbar-actions">
+        <form class="dashboard-language" method="post" action="{% url 'core:set_language' %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <label class="sr-only" for="dash-language">{% t "language" %}</label>
+          <select id="dash-language" name="language" aria-label="{% t 'language' %}" data-language-select>
+            {% for code, name in LANGUAGES %}
+              <option value="{{ code }}" {% if code == CURRENT_LANG %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+          </select>
+        </form>
+        <a class="icon-button" href="{% if user.is_employer %}{% url 'employers:notifications' %}{% else %}{% url 'workers:notifications' %}{% endif %}" aria-label="{% t 'Notifications' %}"><i data-lucide="bell"></i><i></i></a>
+        <span class="dashboard-user">
+          <span class="user-avatar">
+            {% if profile.photo %}<img src="{{ profile.photo.url }}" alt="">{% else %}{{ user.display_name|slice:':1'|upper }}{% endif %}
+          </span>
+          <span>
+            <strong>{{ user.display_name }}</strong>
+            <small>{{ user.email }}</small>
+          </span>
+        </span>
+        <a class="back-home" href="{% url 'core:landing' %}"><i data-lucide="globe-2"></i> {% t "Website" %}</a>
+      </div>
+    </header>
+    <div class="dashboard-body">
+      {% if messages %}
+        <div class="ks-inline-messages">
+          {% for message in messages %}
+            <p class="inline-notice" role="status">{{ message }}</p>
+          {% endfor %}
+        </div>
+      {% endif %}
+      {% block dashboard_content %}{% endblock %}
+    </div>
+  </div>
+</div>
+{% endblock %}

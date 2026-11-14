@@ -1,0 +1,125 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "AI Skill Analysis" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "AI Skill Analysis" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Your strengths, made visible" %}</span>
+    <h2>{% t "Skill analysis" %}</h2>
+    <p>{% if latest %}{% t "The AI model watched your uploaded video and listened to your speech." %}{% else %}{% t "Upload a skills video to get an AI analysis of your skills." %}{% endif %}</p>
+  </div>
+  <span class="analysis-demo-label"><i data-lucide="sparkles"></i> {% if latest %}{% t "AI report ready" %}{% else %}{% t "No analysis yet" %}{% endif %}</span>
+</div>
+
+<section class="skills-photo-banner">
+  <img src="{% static 'images/mechanic-at-work.webp' %}" loading="lazy" decoding="async" alt="A mechanic inspecting an engine in a professional workshop">
+  <div><span>{% t "EVERY SKILL HAS VALUE" %}</span><strong>{% t "Make your experience visible." %}</strong></div>
+</section>
+
+{% if ai_error %}
+  <section class="dashboard-panel reveal">
+    <p class="ks-muted"><i data-lucide="triangle-alert"></i> {% t "The AI model could not analyse the last video:" %} <code>{{ ai_error }}</code></p>
+  </section>
+{% endif %}
+
+{% if pending_count %}
+  <section class="dashboard-panel reveal pending-callout">
+    <p><i data-lucide="list-checks"></i>
+      {{ pending_count }} {% if pending_count == 1 %}{% t "skill is waiting for your approval." %}{% else %}{% t "skills are waiting for your approval." %}{% endif %}
+      {% t "Accept the ones that are really your work so they appear on your profile." %}
+    </p>
+    {% if latest %}
+      <a class="button" href="{% url 'workers:assessment_detail' latest.pk %}"><i data-lucide="check-check"></i>{% t "Review detected skills" %}</a>
+    {% endif %}
+  </section>
+{% endif %}
+
+<section class="analysis-overview">
+  <div class="score-ring" style="--score: {{ overall }}%">
+    <div>
+      <strong>{% if cards or latest %}{{ overall }}{% else %}—{% endif %}</strong>
+      <small>{% t "Overall score" %}</small>
+    </div>
+  </div>
+  <div class="analysis-summary">
+    <span class="eyebrow">{% if latest %}{% t "Latest analysis" %}{% else %}{% t "Ready when you are" %}{% endif %}</span>
+    <h3>
+      {% if latest and latest.detected_profession %}{{ latest.detected_profession }}
+      {% elif cards %}{% t "Your skills are listed below." %}
+      {% else %}{% t "Add skills to your profile to see an analysis." %}{% endif %}
+    </h3>
+    <p>
+      {% if latest and latest.is_ai %}
+        {% t "The AI model watched your video and identified each skill separately, scoring only what it could actually see." %}
+      {% elif latest %}
+        {% t "This report is rule-based — no AI model watched the video, so no skill scores were given." %}
+      {% else %}
+        {% t "Upload a skills video to discover and rate your skills automatically." %}
+      {% endif %}
+    </p>
+    <a class="button" href="{% url 'workers:upload_video' %}"><i data-lucide="sparkles"></i> {% t "Upload a video" %}</a>
+    {% if latest %}
+      <a class="button button-secondary" href="{% url 'workers:assessment_detail' latest.pk %}"><i data-lucide="file-text"></i> {% t "Open latest report" %}</a>
+    {% endif %}
+  </div>
+  <div class="analysis-summary-stats">
+    <div><strong>{{ cards|length }}</strong><span>{% t "Skills on profile" %}</span></div>
+    <div><strong>{{ assessments|length }}</strong><span>{% t "Assessments" %}</span></div>
+    <div><strong>{{ pending_count }}</strong><span>{% t "Awaiting approval" %}</span></div>
+  </div>
+</section>
+
+<section class="dashboard-panel reveal">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "Your skill profile" %}</span><h2>{% t "Skills on your profile" %}</h2></div>
+    <span class="analysis-demo-label">{% if cards %}{% t "Visible to employers" %}{% else %}{% t "No skills yet" %}{% endif %}</span>
+  </div>
+  <div class="analysis-skill-grid">
+    {% for card in cards %}
+      {% include 'partials/skill_card.html' with id=card.id name=card.name level=card.level score=card.score %}
+    {% empty %}
+      <p class="ks-muted">{% t "No skills on your profile yet. Accept a detected skill from an assessment to add it." %}</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="dashboard-panel reveal">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "Assessment history" %}</span><h2>{% t "Your video assessments" %}</h2></div>
+    <i data-lucide="history"></i>
+  </div>
+  <div class="assessment-history">
+    {% for item in assessments %}
+      <a class="assessment-history-row" href="{% url 'workers:assessment_detail' item.pk %}">
+        <span class="history-icon"><i data-lucide="{% if item.is_ai %}brain-circuit{% else %}file-search{% endif %}"></i></span>
+        <div>
+          <strong>{% if item.detected_profession %}{{ item.detected_profession }}{% else %}{% t "Skill video" %}{% endif %}</strong>
+          <p>{{ item.created_at|date:"d M Y, H:i" }}
+            {% if item.ai_report.overall %} · {{ item.ai_report.overall }}/100{% endif %}
+            {% if item.final_level %} · {{ item.get_final_level_display }}{% endif %}
+            · {{ item.detected_skills.count }} {% t "skills" %}
+          </p>
+        </div>
+        <span class="history-source {% if item.is_ai %}is-ai{% else %}is-rule{% endif %}">
+          {% if item.is_ai %}{% t "AI" %}{% else %}{% t "Rule-based" %}{% endif %}
+        </span>
+        <i data-lucide="chevron-right"></i>
+      </a>
+    {% empty %}
+      <p class="ks-muted">{% t "No assessments yet. Upload a skills video to get started." %}</p>
+    {% endfor %}
+  </div>
+</section>
+
+<section class="suggested-jobs-strip">
+  <div>
+    <span class="eyebrow">{% t "Skills in action" %}</span>
+    <h2>{% t "Put your strengths to work" %}</h2>
+    <p>{% t "Explore roles that value practical experience." %}</p>
+  </div>
+  <a class="button" href="{% url 'workers:jobs' %}">{% t "See recommended jobs" %} <i data-lucide="arrow-right"></i></a>
+</section>
+{% endblock %}

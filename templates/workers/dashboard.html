@@ -1,0 +1,120 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Dashboard" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Dashboard" %}{% endblock %}
+
+{% block dashboard_content %}
+<section class="welcome-banner welcome-banner--video">
+  <div class="dashboard-video-overlay" aria-hidden="true"></div>
+  <div>
+    <span class="eyebrow">{% t "Your next opportunity starts here" %}</span>
+    <h2>{% t "Welcome back" %}, {{ user.display_name|slice:':1'|upper }}{{ user.display_name|slice:'1:' }}!</h2>
+    <p>{% t "Keep your profile fresh to get recommendations that fit." %}</p>
+    <a class="button" href="{% url 'workers:profile' %}">{% t "Complete profile" %} <i data-lucide="arrow-right"></i></a>
+  </div>
+</section>
+
+<div class="profile-progress-card">
+  <div class="progress-copy">
+    <span class="metric-icon profile-completion-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#526E50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="3.5"/><path d="M5 20c.9-3.2 3.3-5 7-5s6.1 1.8 7 5"/></svg></span>
+    <div>
+      <strong>{% t "Profile completion" %}</strong>
+      <span>{% t "Your profile is ready for more opportunities." %}</span>
+    </div>
+  </div>
+  <div class="completion-value">{{ profile.profile_completion }}%</div>
+  <div class="completion-track"><span style="width: {{ profile.profile_completion }}%"></span></div>
+</div>
+
+<section class="metric-grid">
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="sparkles"></i></span>
+    <span class="metric-label">{% t "Skills identified" %}</span>
+    <strong>{{ skills|length }}</strong>
+    <small>{% t "Across your profile" %}</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="briefcase-business"></i></span>
+    <span class="metric-label">{% t "Recommended jobs" %}</span>
+    <strong>{{ matched_jobs_count }}</strong>
+    <small>{% t "Open jobs matched to your profile" %}</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="trending-up"></i></span>
+    <span class="metric-label">{% t "Applications" %}</span>
+    <strong>{{ applications|length }}</strong>
+    <small>{% t "Keep track of your progress" %}</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="circle-check"></i></span>
+    <span class="metric-label">{% t "Shortlisted" %}</span>
+    <strong>{{ shortlisted_count }}</strong>
+    <small>{% t "Employers are interested" %}</small>
+  </article>
+</section>
+
+<div class="dashboard-columns">
+  <div class="dashboard-activity-column">
+  <section class="dashboard-panel pipeline-panel">
+    <div class="panel-heading">
+      <div><span class="eyebrow">{% t "Your activity" %}</span><h2>{% t "Application progress" %}</h2></div>
+      <a href="{% url 'workers:applications' %}">{% t "Applications" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+    {% for stage in application_pipeline %}
+      <div class="pipeline-row">
+        <div class="pipeline-label"><span>{{ stage.label|tr }}</span><strong>{{ stage.count }}</strong></div>
+        <div class="pipeline-track" role="img" aria-label="{{ stage.label }}: {{ stage.count }}"><span style="width: {{ stage.share }}%"></span></div>
+      </div>
+    {% empty %}
+      <div class="empty-state compact-empty"><span class="empty-state-icon"><i data-lucide="chart-no-axes-column-increasing"></i></span><h3>{% t "No application activity yet" %}</h3><p>{% t "Apply to a recommended job and your progress will appear here." %}</p><a class="button button-secondary" href="{% url 'workers:jobs' %}">{% t "Browse jobs" %}</a></div>
+    {% endfor %}
+  </section>
+  <section class="dashboard-panel dashboard-quick-actions-panel">
+    <div class="panel-heading"><div><span class="eyebrow">{% t "Next steps" %}</span><h2>{% t "Quick actions" %}</h2></div></div>
+    <div class="dashboard-quick-actions">
+      <a href="{% url 'workers:profile' %}"><i data-lucide="circle-user-round" aria-hidden="true"></i><span>{% t "Update profile" %}</span><i data-lucide="arrow-right" aria-hidden="true"></i></a>
+      <a href="{% url 'workers:upload_video' %}"><i data-lucide="video" aria-hidden="true"></i><span>{% t "Upload a skills video" %}</span><i data-lucide="arrow-right" aria-hidden="true"></i></a>
+      <a href="{% url 'workers:jobs' %}"><i data-lucide="briefcase-business" aria-hidden="true"></i><span>{% t "Browse opportunities" %}</span><i data-lucide="arrow-right" aria-hidden="true"></i></a>
+    </div>
+  </section>
+  </div>
+  <aside class="dashboard-panel notification-panel">
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">{% t "Stay up to date" %}</span>
+        <h2>{% t "Recent notifications" %}</h2>
+      </div>
+      <i data-lucide="bell"></i>
+    </div>
+    {% for note in notifications %}
+      <article class="notification-item">
+        <span class="notification-dot{% if not forloop.first %} green{% endif %}"></span>
+        <div>
+          <strong>{{ note.title }}</strong>
+          <p>{{ note.body }}</p>
+          <small>{{ note.created_at|date:"d M Y" }}</small>
+        </div>
+      </article>
+    {% empty %}
+      <div class="empty-state compact-empty"><span class="empty-state-icon"><i data-lucide="bell"></i></span><h3>{% t "No notifications yet" %}</h3><p>{% t "Updates about your applications and opportunities will appear here." %}</p></div>
+    {% endfor %}
+    <a class="text-link" href="{% url 'workers:notifications' %}">{% t "See all notifications" %} <i data-lucide="arrow-right"></i></a>
+  </aside>
+</div>
+
+<section class="dashboard-panel recommended-jobs-panel">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "Picked for you" %}</span><h2>{% t "Recommended jobs" %}</h2></div>
+    <a href="{% url 'workers:jobs' %}">{% t "View all" %} <span aria-hidden="true">→</span></a>
+  </div>
+  <div class="dashboard-job-list">
+    {% for item in recommended %}
+      {% include 'partials/job_card.html' with job=item.job match=item.match applied=item.applied %}
+    {% empty %}
+      <p class="ks-muted">{% t "No recommendations yet. Complete your profile to see matched jobs." %}</p>
+    {% endfor %}
+  </div>
+</section>
+
+{% endblock %}

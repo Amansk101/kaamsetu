@@ -1,0 +1,26 @@
+{% load ks_i18n %}
+<article class="listing-card skill-card">
+  <div class="skill-card-heading">
+    <div>
+      <h3>{{ name|tr }}</h3>
+      <span class="skill-level">{{ level|tr }}</span>
+    </div>
+    <div class="skill-card-actions">
+      <span class="skill-score"><i data-lucide="sparkles"></i>{{ score }}%</span>
+      {% if id %}
+        <form method="post" action="{% url 'workers:delete_skill' id %}" class="skill-delete-form"
+              onsubmit="return confirm('{% t "Remove this skill from your profile?" %}')">
+          {% csrf_token %}
+          <button type="submit" class="skill-delete-button"
+                  title="{% t 'Remove skill' %}" aria-label="{% t 'Remove skill' %}">
+            <i data-lucide="trash-2"></i>
+          </button>
+        </form>
+      {% endif %}
+    </div>
+  </div>
+  <div class="skill-progress" role="progressbar" aria-label="{{ name|tr }} {% t 'score' %}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{ score }}">
+    <span style="width: {{ score }}%"></span>
+  </div>
+  <p>{% if description %}{{ description|tr }}{% else %}{% t "Add a short description of your experience with this skill." %}{% endif %}</p>
+</article>

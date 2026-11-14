@@ -1,0 +1,44 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Choose how you’ll use KaamSetu" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main class="role-page">
+  <div class="role-heading">
+    <span class="eyebrow">{% t "Let’s get started" %}</span>
+    <h1>{% if preselect == 'worker' %}{% t "Find work that fits your skills" %}{% elif preselect == 'employer' %}{% t "Find skilled people nearby" %}{% else %}{% t "Choose how you’ll use KaamSetu" %}{% endif %}</h1>
+    <p>{% if preselect %}{% t "We’ve highlighted the account type that fits you — you can still pick either one." %}{% else %}{% t "Pick the path that best fits what you’re looking for today." %}{% endif %}</p>
+  </div>
+  <div class="role-grid">
+    <article class="role-card worker-role{% if preselect == 'worker' %} is-recommended{% endif %}">
+      {% if preselect == 'worker' %}<span class="role-badge"><i data-lucide="sparkles"></i>{% t "Recommended for you" %}</span>{% endif %}
+      <div class="role-icon"><i data-lucide="users-round"></i></div>
+      <span class="role-kicker">{% t "FOR WORKERS" %}</span>
+      <h2>{% t "Find work that fits your skills" %}</h2>
+      <p>{% t "Create a profile that showcases what you can do and discover suitable opportunities." %}</p>
+      <ul>
+        <li><i data-lucide="sparkles"></i>{% t "Get AI job recommendations" %}</li>
+        <li><i data-lucide="briefcase-business"></i>{% t "Showcase your skills and experience" %}</li>
+        <li><i data-lucide="arrow-right"></i>{% t "Track your applications" %}</li>
+      </ul>
+      <a class="button" href="{% url 'accounts:register' %}?role=worker">{% t "Create Worker Account" %} <i data-lucide="arrow-right"></i></a>
+      <p class="role-login">{% t "Already registered?" %} <a href="{% url 'accounts:login' %}?role=worker">{% t "Worker login" %}</a></p>
+    </article>
+    <article class="role-card employer-role{% if preselect == 'employer' %} is-recommended{% endif %}">
+      {% if preselect == 'employer' %}<span class="role-badge"><i data-lucide="sparkles"></i>{% t "Recommended for you" %}</span>{% endif %}
+      <div class="role-icon"><i data-lucide="briefcase-business"></i></div>
+      <span class="role-kicker">{% t "FOR EMPLOYERS" %}</span>
+      <h2>{% t "Find skilled people nearby" %}</h2>
+      <p>{% t "Share a role, discover local talent, and connect with candidates who match your needs." %}</p>
+      <ul>
+        <li><i data-lucide="sparkles"></i>{% t "Discover matched talent" %}</li>
+        <li><i data-lucide="users-round"></i>{% t "Review worker profiles with consent" %}</li>
+        <li><i data-lucide="arrow-right"></i>{% t "Manage your hiring process" %}</li>
+      </ul>
+      <a class="button" href="{% url 'accounts:register' %}?role=employer">{% t "Create Employer Account" %} <i data-lucide="arrow-right"></i></a>
+      <p class="role-login">{% t "Already registered?" %} <a href="{% url 'accounts:login' %}?role=employer">{% t "Employer login" %}</a></p>
+    </article>
+  </div>
+</main>
+{% endblock %}

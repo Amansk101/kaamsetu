@@ -1,0 +1,89 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Post a Job" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Post a Job" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Reach local talent" %}</span>
+    <h2>{% if job %}{% t "Edit your job" %}{% else %}{% t "Post a new job" %}{% endif %}</h2>
+    <p>{% t "Share the role, skills and salary so the right workers can find you." %}</p>
+  </div>
+  <span class="recommend-count"><i data-lucide="shield-check"></i>{% t "Checked before publishing" %}</span>
+</div>
+
+<section class="employer-photo-strip">
+  <img src="{% static 'images/plumber-at-work.webp' %}" loading="lazy" decoding="async" alt="A skilled plumber working in a professional environment">
+  <div>
+    <span>{% t "HIRING LOCALLY" %}</span>
+    <strong>{% t "Describe the work clearly. Get better applicants." %}</strong>
+  </div>
+</section>
+
+{% if form.non_field_errors %}
+  <div class="form-error-block" role="alert">
+    {% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+  </div>
+{% endif %}
+
+<form class="form-section job-post-form" method="post" novalidate>
+  {% csrf_token %}
+  <div class="form-section-heading">
+    <span>01</span>
+    <div>
+      <h3>{% t "Job details" %}</h3>
+      <p>{% t "Fields marked with an asterisk are required." %}</p>
+    </div>
+  </div>
+
+  <div class="form-grid">
+    <label>{% t "Job title" %} *
+      {{ form.title }}
+      {% if form.title.errors %}<span class="field-error">{{ form.title.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Business / employer name" %}
+      {{ form.company_name }}
+      {% if form.company_name.errors %}<span class="field-error">{{ form.company_name.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Location" %} *
+      {{ form.location }}
+      {% if form.location.errors %}<span class="field-error">{{ form.location.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Work type" %} *
+      {{ form.job_type }}
+      {% if form.job_type.errors %}<span class="field-error">{{ form.job_type.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Monthly salary from (₹)" %} *
+      {{ form.wage_min }}
+      {% if form.wage_min.errors %}<span class="field-error">{{ form.wage_min.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Monthly salary to (₹)" %} *
+      {{ form.wage_max }}
+      {% if form.wage_max.errors %}<span class="field-error">{{ form.wage_max.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label class="span-two">{% t "Skills needed" %} * <span class="optional">{% t "Separate with commas" %}</span>
+      {{ form.skills }}
+      {% if form.skills.errors %}<span class="field-error">{{ form.skills.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label class="span-two">{% t "Job description" %} *
+      {{ form.description }}
+      {% if form.description.errors %}<span class="field-error">{{ form.description.errors|join:", " }}</span>{% endif %}
+    </label>
+  </div>
+
+  <div class="form-actions">
+    <button class="button" type="submit">{% if job %}{% t "Save changes" %}{% else %}{% t "Publish job" %}{% endif %}</button>
+    <a class="button button-secondary" href="{% url 'employers:jobs' %}">{% t "Cancel" %}</a>
+  </div>
+</form>
+
+<aside class="rule-check-note">
+  <i data-lucide="shield-alert"></i>
+  <div>
+    <strong>{% t "Rule-based safety check" %}</strong>
+    <p>{% t "Every listing is scanned with simple keyword rules for requests such as registration fees, deposits, OTPs or passwords. This is not an external AI service — it is a basic local rule check, and flagged listings are held for review." %}</p>
+  </div>
+</aside>
+{% endblock %}

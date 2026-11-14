@@ -1,0 +1,222 @@
+{% load static ks_i18n %}
+{# Shared report body for one SkillAssessment. Expects: assessment, report, detected, show_actions #}
+
+{% if assessment.video %}
+  <section class="dashboard-panel assessment-video-panel" aria-label="{% t 'Uploaded skills video' %}">
+    <h3>{% t "Your skills video" %}</h3>
+    <video class="assessment-source-video" src="{{ assessment.video.url }}" controls playsinline preload="metadata">{% t "Your browser does not support video playback." %}</video>
+  </section>
+{% endif %}
+
+{% if report %}
+  <section class="ai-verdict reveal">
+    <span class="ai-verdict-icon"><i data-lucide="brain-circuit"></i></span>
+    <div class="ai-verdict-body">
+      <span class="eyebrow">{% if report.is_ai %}{% t "AI verdict" %}{% else %}{% t "Rule-based report" %}{% endif %}</span>
+      <h3>{{ report.summary }}</h3>
+      <div class="ai-verdict-chips">
+        {% if report.profession %}
+          <span class="chip"><i data-lucide="briefcase-business"></i>{{ report.profession }}</span>
+        {% endif %}
+        {% if report.level %}
+          <span class="chip chip-{{ report.level }}"><i data-lucide="award"></i>{{ report.level|title }}</span>
+        {% else %}
+          <span class="chip chip-beginner"><i data-lucide="circle-help"></i>{% t "Not rated" %}</span>
+        {% endif %}
+        <span class="chip"><i data-lucide="clipboard-list"></i>{{ report.overall }}/100</span>
+        {% if report.is_ai %}
+          <span class="chip"><i data-lucide="gauge"></i>{% t "Confidence" %} {% widthratio report.confidence 1 100 %}%</span>
+          <span class="chip"><i data-lucide="scan-search"></i>{{ report.skill_count }} {% t "skills found" %}</span>
+          <span class="chip"><i data-lucide="badge-check"></i>{{ report.assessable_count }} {% t "rated" %}</span>
+        {% else %}
+          <span class="chip chip-beginner"><i data-lucide="triangle-alert"></i>{% t "No AI analysis" %}</span>
+        {% endif %}
+        <span class="chip"><i data-lucide="clock-3"></i>{{ report.duration }}s {% t "video" %}</span>
+      </div>
+      {% if report.work_summary %}<p class="ks-muted">{{ report.work_summary }}</p>{% endif %}
+    </div>
+  </section>
+
+  {% if not report.is_ai %}
+    <section class="dashboard-panel reveal">
+      <p class="ks-muted"><i data-lucide="triangle-alert"></i>
+        {% t "No AI model watched this video, so no skill score could be given. Add KAAMSETU_GEMINI_API_KEY to your .env and re-upload for a real analysis of the work and the speech." %}
+      </p>
+    </section>
+  {% endif %}
+
+  <section class="dashboard-panel ai-signals-panel reveal">
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">{% if report.is_ai %}{% t "What the AI looked at" %}{% else %}{% t "Report inputs" %}{% endif %}</span>
+        <h2>{% if report.is_ai %}{% t "Signal breakdown" %}{% else %}{% t "Estimated signals" %}{% endif %}</h2>
+      </div>
+      <i data-lucide="scan-search"></i>
+    </div>
+    <div class="ai-signal-grid">
+      {% for signal in report.signals %}
+        <div class="ai-signal tone-{{ signal.tone }}">
+          <span class="ai-signal-label">{{ signal.label }}</span>
+          <strong class="ai-signal-value">{{ signal.value }}</strong>
+          <p class="ai-signal-note">{{ signal.note }}</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if report.speech.has_speech %}
+    <section class="dashboard-panel reveal">
+      <div class="panel-heading">
+        <div><span class="eyebrow">{% t "What you said on camera" %}</span><h2>{% t "Speech analysis" %}</h2></div>
+        <i data-lucide="mic"></i>
+      </div>
+      <div class="ai-signal-grid">
+        <div class="ai-signal tone-{% if report.speech.correct %}good{% elif report.speech.correct == False %}warn{% else %}info{% endif %}">
+          <span class="ai-signal-label">{% t "Speech matches the work" %}</span>
+          <strong class="ai-signal-value">{% if report.speech.correct %}{% t "Yes" %}{% elif report.speech.correct == False %}{% t "No" %}{% else %}{% t "Unclear" %}{% endif %}</strong>
+          <p class="ai-signal-note">{% if report.speech.feedback %}{{ report.speech.feedback }}{% else %}{% t "Whether what you said matched the work you showed." %}{% endif %}</p>
+        </div>
+        <div class="ai-signal tone-{{ report.speech.tone }}">
+          <span class="ai-signal-label">{% t "Speech clarity" %}</span>
+          <strong class="ai-signal-value">{{ report.speech.quality_label }}</strong>
+          <p class="ai-signal-note">{% if report.speech.language %}{% t "Spoken in" %} {{ report.speech.language }}.{% else %}{% t "How easy your words were to understand." %}{% endif %}</p>
+        </div>
+      </div>
+      {% if report.speech.transcript %}
+        <p class="ks-muted"><i data-lucide="quote"></i> “{{ report.speech.transcript }}”</p>
+      {% endif %}
+    </section>
+  {% endif %}
+
+  <section class="dashboard-panel reveal">
+    <div class="panel-heading">
+      <div>
+        <span class="eyebrow">{% t "Discovered in this video" %}</span>
+        <h2>{% t "Skills the AI identified" %}</h2>
+      </div>
+      {% if show_actions %}
+        <form method="post" action="{% url 'workers:accept_all_skills' assessment.pk %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.path }}">
+          <button type="submit" class="button button-secondary"><i data-lucide="check-check"></i>{% t "Accept all rated skills" %}</button>
+        </form>
+      {% endif %}
+    </div>
+
+    <div class="detected-skill-list">
+      {% for item in detected %}
+        <article class="detected-skill evidence-{{ item.evidence_status }}">
+          <div class="detected-skill-head">
+            <div>
+              <h3>{{ item.name }}</h3>
+              {% if item.category %}<span class="detected-skill-category">{{ item.category }}</span>{% endif %}
+            </div>
+            <div class="detected-skill-score">
+              {% if item.is_assessable %}
+                <span class="score-pill score-{{ item.level }}">{{ item.score }}<small>/100</small></span>
+                <span class="level-pill level-{{ item.level }}">{{ item.level_label }}</span>
+              {% else %}
+                <span class="score-pill score-unrated">—</span>
+                <span class="level-pill level-unrated">{{ item.level_label }}</span>
+              {% endif %}
+            </div>
+          </div>
+
+          {% if item.description %}<p class="detected-skill-desc">{{ item.description }}</p>{% endif %}
+
+          <div class="detected-skill-meta">
+            <span class="evidence-badge evidence-{{ item.evidence_status }}">
+              <i data-lucide="{% if item.evidence_status == 'observed' %}eye{% elif item.evidence_status == 'partial' %}eye-half{% else %}help-circle{% endif %}"></i>
+              {{ item.get_evidence_status_display }}
+            </span>
+            {% if item.is_assessable and item.confidence %}
+              <span class="evidence-badge"><i data-lucide="gauge"></i>{% t "Confidence" %} {% widthratio item.confidence 1 100 %}%</span>
+            {% endif %}
+            <span class="approval-badge approval-{{ item.approval_status }}">{{ item.get_approval_status_display }}</span>
+          </div>
+
+          {% if item.reason %}
+            <p class="detected-skill-reason"><i data-lucide="info"></i>{{ item.reason }}</p>
+          {% endif %}
+
+          {% if item.evidence %}
+            <div class="detected-skill-evidence">
+              <span class="meta-label">{% t "Evidence from the video" %}</span>
+              <ul>{% for point in item.evidence %}<li>{{ point }}</li>{% endfor %}</ul>
+            </div>
+          {% endif %}
+
+          <div class="detected-skill-columns">
+            {% if item.strengths %}
+              <div><span class="meta-label meta-good">{% t "Strengths" %}</span><ul>{% for point in item.strengths %}<li>{{ point }}</li>{% endfor %}</ul></div>
+            {% endif %}
+            {% if item.improvements %}
+              <div><span class="meta-label meta-warn">{% t "To improve" %}</span><ul>{% for point in item.improvements %}<li>{{ point }}</li>{% endfor %}</ul></div>
+            {% endif %}
+            {% if item.recommendations %}
+              <div><span class="meta-label">{% t "Recommended practice" %}</span><ul>{% for point in item.recommendations %}<li>{{ point }}</li>{% endfor %}</ul></div>
+            {% endif %}
+          </div>
+
+          {% if item.limitations %}
+            <p class="detected-skill-limit"><i data-lucide="eye-off"></i>{% t "Could not judge:" %} {{ item.limitations }}</p>
+          {% endif %}
+
+          {% if show_actions %}
+            <div class="detected-skill-actions">
+              {% if item.approval_status != 'accepted' %}
+                <form method="post" action="{% url 'workers:decide_skill' item.pk 'accept' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.path }}">
+                  <button type="submit" class="button"><i data-lucide="check"></i>{% t "Accept this skill" %}</button>
+                </form>
+              {% endif %}
+              {% if item.approval_status != 'rejected' %}
+                <form method="post" action="{% url 'workers:decide_skill' item.pk 'reject' %}">
+                  {% csrf_token %}
+                  <input type="hidden" name="next" value="{{ request.path }}">
+                  <button type="submit" class="button button-secondary"><i data-lucide="x"></i>{% t "Reject" %}</button>
+                </form>
+              {% endif %}
+            </div>
+          {% endif %}
+        </article>
+      {% empty %}
+        <p class="ks-muted">{% t "No skill could be identified in this video. Record a longer, clearer demonstration and try again." %}</p>
+      {% endfor %}
+    </div>
+  </section>
+
+  {% if report.insufficient_notes %}
+    <section class="dashboard-panel reveal">
+      <div class="panel-heading">
+        <div><span class="eyebrow">{% t "Honest limits" %}</span><h2>{% t "Not enough evidence" %}</h2></div>
+        <i data-lucide="eye-off"></i>
+      </div>
+      <ul class="ks-plain-list">{% for note in report.insufficient_notes %}<li>{{ note }}</li>{% endfor %}</ul>
+    </section>
+  {% endif %}
+
+  <div class="analysis-columns">
+    <section class="insight-card reveal">
+      <span class="insight-heading"><i data-lucide="circle-check"></i>{% t "Your strengths" %}</span>
+      <ul>{% for item in report.strengths %}<li>{{ item }}</li>{% endfor %}</ul>
+    </section>
+    <section class="insight-card improvement-card reveal">
+      <span class="insight-heading"><i data-lucide="lightbulb"></i>{% t "Ideas to grow" %}</span>
+      <ul>{% for item in report.improvements %}<li>{{ item }}</li>{% endfor %}</ul>
+    </section>
+    <section class="insight-card reveal">
+      <span class="insight-heading"><i data-lucide="book-open-check"></i>{% t "Suggested training" %}</span>
+      <ul>{% for item in report.training %}<li>{{ item }}</li>{% endfor %}</ul>
+    </section>
+    <section class="insight-card reveal">
+      <span class="insight-heading"><i data-lucide="footprints"></i>{% t "Next steps" %}</span>
+      <ul>{% for item in report.next_steps %}<li>{{ item }}</li>{% endfor %}</ul>
+    </section>
+  </div>
+{% else %}
+  <section class="dashboard-panel reveal">
+    <p class="ks-muted"><i data-lucide="triangle-alert"></i>{% t "This assessment has no stored report." %}</p>
+  </section>
+{% endif %}

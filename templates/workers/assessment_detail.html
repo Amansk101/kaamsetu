@@ -1,0 +1,36 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Assessment report" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Assessment report" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{{ assessment.created_at|date:"d M Y, H:i" }}</span>
+    <h2>{% if report.profession %}{{ report.profession }}{% else %}{% t "Skill assessment" %}{% endif %}</h2>
+    <p>
+      {% if report.is_ai %}
+        {% t "The AI model watched your video and listened to your speech to discover each skill and rate only what it could actually see." %}
+      {% else %}
+        {% t "No AI model analysed this video — this is a rule-based report with no skill scores." %}
+      {% endif %}
+    </p>
+  </div>
+  <div class="intro-actions">
+    <a class="button button-secondary" href="{% url 'workers:skill_analysis' %}"><i data-lucide="arrow-left"></i>{% t "All assessments" %}</a>
+    <a class="button" href="{% url 'workers:upload_video' %}"><i data-lucide="upload"></i>{% t "Upload another video" %}</a>
+  </div>
+</div>
+
+{% include 'workers/_assessment_report.html' with assessment=assessment report=report detected=detected show_actions=True %}
+
+<section class="suggested-jobs-strip">
+  <div>
+    <span class="eyebrow">{% t "Skills in action" %}</span>
+    <h2>{% t "Put your strengths to work" %}</h2>
+    <p>{% t "Explore roles that value practical experience." %}</p>
+  </div>
+  <a class="button" href="{% url 'workers:jobs' %}">{% t "See recommended jobs" %} <i data-lucide="arrow-right"></i></a>
+</section>
+{% endblock %}

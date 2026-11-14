@@ -1,0 +1,155 @@
+/* ==========================================================================
+   KaamSetu — Django-specific additions (kept separate from the ported
+   React stylesheets so those stay a faithful copy).
+   ========================================================================== */
+
+/* Toast messages (Django messages framework) */
+.ks-toasts {
+  position: fixed; top: 92px; right: 20px; z-index: 2000;
+  display: grid; gap: 10px; max-width: min(360px, calc(100vw - 32px));
+}
+.ks-toast {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 13px 15px; border-radius: 12px; font-size: 13px; font-weight: 600;
+  background: #fff; border: 1px solid var(--kaam-border, #e0dce8);
+  box-shadow: 0 14px 34px #2f24471f; color: #2d2442;
+}
+.ks-toast button { background: transparent; padding: 0 4px; color: inherit; font-size: 18px; line-height: 1; }
+.ks-toast-success { border-color: #DCE8D5; background: #f1eef9; color: #234B3A; }
+.ks-toast-error, .ks-toast-danger { border-color: #f2c7c2; background: #fdeeec; color: #a63f34; }
+.ks-toast-warning { border-color: #eed9a8; background: #fdf6e7; color: #8a5a12; }
+.ks-toast-info { border-color: #cec7dd; background: #f2f0f8; color: #392a5c; }
+
+/* Messages rendered inline at the top of dashboard bodies */
+.dashboard-body > .ks-inline-messages { margin-bottom: 16px; }
+
+/* Navbar logout button (rendered as a button but styled like a nav link) */
+.nav-logout-form { display: inline; margin: 0; }
+.nav-logout-btn {
+  border: 0; cursor: pointer; font: inherit;
+  background: linear-gradient(135deg, #234B3A, #234B3A); color: #fff;
+}
+
+/* Form error messages coming from Django forms */
+.form-error, .field-error { color: #b53c38; font-size: 12.5px; margin: 4px 0 0; }
+.field-error li { list-style: none; }
+.auth-form .field-error { grid-column: 1 / -1; }
+.form-errors { margin: 0 0 4px; padding: 0; }
+
+/* Dashboards: keep the ported sidebar styles but allow <form> logout */
+.sidebar-logout-form { margin-top: auto; }
+
+/* Simple pagination */
+.ks-pagination { display: flex; justify-content: center; gap: 8px; margin: 26px 0 6px; flex-wrap: wrap; }
+.ks-pagination a, .ks-pagination span {
+  padding: 8px 13px; border: 1px solid var(--kaam-border, #e0dce8);
+  border-radius: 9px; background: #fff; color: #473f5b; font-size: 12.5px; font-weight: 700;
+  text-decoration: none;
+}
+.ks-pagination .is-current { background: #e9e5f2; color: var(--kaam-blue, #234B3A); border-color: #ccc7d8; }
+.ks-pagination .is-disabled { opacity: .45; }
+
+/* Rating stars (feedback form) */
+.ks-stars { display: flex; gap: 6px; }
+.ks-stars label { display: inline-flex; align-items: center; gap: 5px; font-size: 13px; }
+.ks-stars input { accent-color: var(--kaam-blue, #234B3A); }
+
+/* Small helpers */
+.ks-mt-0 { margin-top: 0; }
+.ks-muted { color: #7f7b88; font-size: 12px; }
+.ks-hidden { display: none !important; }
+
+/* ==========================================================================
+   Employer portal additions
+   The React reference has an employer side that was never fully ported as
+   templates. These rules reuse the existing card / status / form classes and
+   only add what the new employer pages need.
+   ========================================================================== */
+
+/* Status tabs are rendered as links in the templates (buttons were styled only) */
+.application-status-tabs a {
+  display: flex; align-items: center; gap: 6px; padding: 8px 11px;
+  border: 1px solid transparent; border-radius: 8px;
+  background: transparent; color: #7f7b88; text-decoration: none;
+  font-size: 11px; font-weight: 600;
+}
+.application-status-tabs a.active { border-color: #e0dce9; background: #fff; color: #234B3A; }
+.application-status-tabs a span {
+  padding: 2px 5px; border-radius: 99px; background: #ebe8f3; font-size: 9px;
+}
+
+/* Job + application status colours (job rows use status-<Job.status>) */
+.status-active, .status-selected { background: #DCE8D5; color: #234B3A; }
+.status-draft, .status-closed { background: #f1f0f3; color: #6e6a77; }
+.status-pending, .status-pending-verification { background: #fff4df; color: #9c6b19; }
+.status-rejected { background: #fbeceb; color: #aa4b43; }
+.status-applied { background: #eef2fb; color: #4a6ba8; }
+
+/* Employer job / application rows: inline status picker */
+.employer-job-actions, .employer-application-actions { align-items: center; }
+.status-form { display: flex; align-items: center; gap: 7px; }
+.status-form select {
+  padding: 7px 9px; border: 1px solid #dfdce5; border-radius: 8px;
+  background: #fff; color: #484354; font: 500 11px 'DM Sans', sans-serif;
+}
+.status-form .button { padding: 7px 11px; font-size: 11px; }
+
+/* Post a Job — rule-based safety note */
+.rule-check-note {
+  display: flex; align-items: flex-start; gap: 12px; margin-top: 16px;
+  padding: 15px 17px; border: 1px dashed #dbd8e3; border-radius: 13px; background: #f9f8fb;
+}
+.rule-check-note svg { color: #9c6b19; flex: none; }
+.rule-check-note strong { display: block; margin-bottom: 4px; color: #362e4a; font: 700 13px Manrope, sans-serif; }
+.rule-check-note p { margin: 0; color: #767180; font-size: 11.5px; line-height: 1.55; }
+
+/* Inline form-level validation block */
+.form-error-block {
+  margin-bottom: 14px; padding: 12px 15px;
+  border: 1px solid #f2c7c2; border-radius: 11px; background: #fdeeec;
+}
+
+/* Find workers — search row */
+.worker-search.job-search-panel { grid-template-columns: minmax(0, 1fr) auto; align-items: center; }
+.worker-search .button { padding: 10px 16px; font-size: 12px; }
+
+/* Worker detail */
+.worker-detail-grid { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 15px; align-items: start; }
+.worker-detail-head { display: flex; align-items: center; gap: 14px; margin-bottom: 15px; }
+.worker-detail-head h3 { margin: 0 0 4px; color: #2b243b; font: 750 18px Manrope, sans-serif; }
+.worker-detail-head .worker-avatar { width: 62px; height: 62px; }
+.worker-detail-head .match-badge { margin-top: 7px; }
+.worker-bio { margin: 0 0 14px; color: #767180; font-size: 12px; line-height: 1.55; }
+.worker-detail-subheading { margin-top: 22px; }
+.detail-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; margin: 14px 0 0; }
+.detail-list dt { color: #8a958d; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; }
+.detail-list dd { margin: 3px 0 0; color: #3a3449; font-size: 12.5px; font-weight: 600; }
+.worker-detail-grid .dashboard-panel .button { margin-bottom: 9px; }
+
+/* Hired workers — milestone chips */
+.milestone-row { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 11px; }
+.milestone-chip {
+  display: inline-flex; align-items: center; gap: 5px; padding: 5px 10px;
+  border: 1px dashed #dbd8e3; border-radius: 99px; background: #f9f8fb;
+  color: #898591; font-size: 10px; font-weight: 700;
+}
+.milestone-chip.is-done { border-style: solid; border-color: #DCE8D5; background: #f1eef9; color: #234B3A; }
+
+/* Feedback & follow-up */
+.followup-summary {
+  display: flex; align-items: center; gap: 14px; margin-bottom: 15px;
+  padding: 18px; border: 1px solid #e5e3ea; border-radius: 14px; background: #fff;
+}
+.followup-summary h3 { margin: 3px 0 8px; color: #312942; font: 700 15px Manrope, sans-serif; }
+.settings-subheading { margin-top: 26px; }
+.settings-form .form-actions { margin-top: 20px; }
+
+@media (max-width: 900px) {
+  .worker-detail-grid { grid-template-columns: minmax(0, 1fr); }
+}
+@media (max-width: 700px) {
+  .detail-list { grid-template-columns: minmax(0, 1fr); }
+  .worker-search.job-search-panel { grid-template-columns: minmax(0, 1fr); }
+  .status-form { width: 100%; }
+  .employer-job-actions, .employer-application-actions { flex-wrap: wrap; }
+}

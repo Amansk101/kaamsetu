@@ -1,0 +1,37 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load ks_i18n %}
+
+{% block title %}{% t "Settings" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Settings" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Make KaamSetu work for you" %}</span>
+    <h2>{% t "Preferences" %}</h2>
+    <p>{% t "Adjust job discovery and profile visibility for your account." %}</p>
+  </div>
+</div>
+
+<form class="form-section settings-form" method="post">
+  {% csrf_token %}
+  <label class="checkbox-label">{{ form.job_alerts }} {% t "Show job and application updates" %}</label>
+  <label class="checkbox-label">{{ form.nearby_only }} {% t "Prioritize opportunities near my location" %}</label>
+  <label class="checkbox-label">{{ form.profile_visible }} {% t "Allow employers to find and view my profile" %}</label>
+  <div class="form-grid">
+    <label>{% t "Preferred job type" %} {{ form.preferred_job_type }}</label>
+    <label>{% t "Minimum monthly salary (₹)" %} {{ form.minimum_salary }}</label>
+  </div>
+  <p class="auth-intro">{% t "Employers can view worker profile details and applications without a separate consent request." %}</p>
+  <div class="form-actions">
+    <button class="button" type="submit">{% t "Save preferences" %}</button>
+  </div>
+</form>
+<section class="form-section settings-form">
+  <div class="form-section-heading">
+    <span>02</span>
+    <div><h3>{% t "Account security" %}</h3><p>{% t "Use a strong password to keep your account secure." %}</p></div>
+  </div>
+  <a class="button button-secondary" href="{% url 'accounts:password_change' %}">{% t "Change password" %}</a>
+</section>
+{% endblock %}

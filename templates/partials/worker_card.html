@@ -1,0 +1,25 @@
+{% load ks_i18n %}
+<article class="listing-card worker-card">
+  <div class="worker-card-heading">
+    <div class="worker-avatar">
+      {% if worker.photo %}<img src="{{ worker.photo.url }}" alt="{{ worker.full_name }}">{% else %}<i data-lucide="user-round"></i>{% endif %}
+    </div>
+    <div>
+      <h3>{{ worker.full_name }}</h3>
+      <p class="listing-meta-inline"><i data-lucide="map-pin"></i>{% if worker.location_display %}{{ worker.location_display }}{% else %}{% t "Location not specified" %}{% endif %}</p>
+    </div>
+    {% if match is not None %}<span class="match-badge"><i data-lucide="sparkles" aria-hidden="true"></i>{{ match }}% {% t "match" %}</span>{% endif %}
+  </div>
+  <div class="listing-meta">
+    <span><i data-lucide="briefcase-business"></i>{% if worker.experience %}{{ worker.experience }}{% else %}{% t "Experience not specified" %}{% endif %}</span>
+  </div>
+  {% if worker.skills_text %}
+  <div class="listing-skills">
+    <span class="meta-label">{% t "Skills" %}</span>
+    <div class="skill-tags">{% for ws in worker.skills.all %}<span>{{ ws.skill.name|tr }}</span>{% endfor %}</div>
+  </div>
+  {% endif %}
+  <div class="listing-actions">
+    <a class="button button-secondary" href="{% url 'employers:worker_detail' worker.id %}">{% t "View Profile" %}</a>
+  </div>
+</article>

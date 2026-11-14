@@ -1,0 +1,69 @@
+{% extends 'base.html' %}{% load static ks_i18n %}
+{% block title %}{% t "cand_heading" %} — {{ job.title }}{% endblock %}
+{% block content %}
+<div class="glass mb-3">
+  <h2 class="section-title">{% t "cand_heading" %} — {{ job.title }}</h2>
+  <p class="muted mb-0">{% t "cand_note" %}</p>
+</div>
+
+<section class="employer-photo-strip candidates-photo-strip">
+  <img src="{% static 'images/indian-employer-worker-connection.webp' %}" loading="lazy" decoding="async" alt="An Indian employer greeting a skilled worker at a construction site">
+  <div><span>{% t "CONSENT-LED HIRING" %}</span><strong>{% t "Workers choose what to share." %}</strong></div>
+</section>
+
+{% for row in rows %}
+  <div class="cand">
+    <div class="av {% if not row.unlocked %}locked{% endif %}">
+      {% if row.unlocked and row.share_name %}{{ row.worker.full_name|slice:":1"|upper }}{% else %}?{% endif %}
+    </div>
+    <div style="flex:1">
+      {% if row.unlocked %}
+        <div class="d-flex justify-content-between">
+          <b>{% if row.share_name %}{{ row.worker.full_name }}{% else %}{% t "cand_worker_num" %} #{{ row.worker.id }}{% endif %}</b>
+          <span class="badge-ok">{{ row.interest.match_score }}% {% t "cand_match" %}</span>
+        </div>
+        <div class="tiny mt-1">
+          {% if row.share_city %}{{ row.worker.location_display|default:"—" }}{% endif %}
+          {% if row.share_skills %}
+            · {% for ws in row.worker.skills.all %}{{ ws.skill.name }} ({{ ws.get_level_display }}){% if not forloop.last %}, {% endif %}{% endfor %}
+          {% endif %}
+        </div>
+        {% if row.share_education %}
+          <div class="tiny mt-1">🎓 {% for e in row.worker.education.all %}{{ e.get_level_display }}{% if not forloop.last %}, {% endif %}{% endfor %}</div>
+        {% endif %}
+        {% if row.share_video and row.worker.assessments.first and row.worker.assessments.first.video %}
+          <div class="shared-worker-video"><span class="meta-label">{% t "cand_video_shared" %}</span><video class="assessment-source-video" src="{{ row.worker.assessments.first.video.url }}" controls playsinline preload="metadata">{% t "Your browser does not support video playback." %}</video></div>
+        {% endif %}
+        {% if row.connection %}
+          <form method="post" action="{% url 'hiring:connection_update' row.connection.id %}" class="d-flex gap-2 mt-2">
+            {% csrf_token %}
+            <select name="status" class="form-select form-select-sm" style="width:auto">
+              {% for val, label in row.connection.Status.choices %}
+                <option value="{{ val }}" {% if row.connection.status == val %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button class="ks-btn btn btn-sm">{% t "c_update" %}</button>
+          </form>
+        {% endif %}
+      {% else %}
+        <div class="locked">
+          <div><b>{% t "cand_worker_num" %} #{{ row.worker.id }}</b> · <span class="tiny">{{ row.interest.match_score }}% {% t "cand_match" %}</span></div>
+          <div class="tiny mt-1">{% t "cand_details_after_consent" %}</div>
+        </div>
+        <div class="tiny mt-2">🔒 {% t "cand_locked" %}</div>
+      {% endif %}
+      <div class="candidate-contact-actions">
+        {% if row.worker.mobile %}<a class="call-link" href="tel:{{ row.worker.mobile|urlencode }}"><i data-lucide="phone-call" aria-hidden="true"></i>{% t "Call" %} {{ row.worker.mobile }}</a>{% endif %}
+        {% if row.worker.email or row.worker.user.email %}
+          <a class="call-link" target="_blank" rel="noopener noreferrer" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to={{ row.worker.email|default:row.worker.user.email|urlencode }}"><i data-lucide="mail" aria-hidden="true"></i>{% t "Send Email" %}</a>
+          <a class="call-link" href="mailto:{{ row.worker.email|default:row.worker.user.email|urlencode }}">{% t "Open email app" %}</a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+{% empty %}
+  <div class="glass"><p class="tiny mb-0">{% t "cand_none" %}</p></div>
+{% endfor %}
+
+<a class="ks-btn-ghost btn mt-2" href="{% url 'employers:dashboard' %}">← {% t "c_back_dashboard" %}</a>
+{% endblock %}

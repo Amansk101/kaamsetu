@@ -1,0 +1,69 @@
+{% load ks_i18n %}
+<article class="listing-card job-card" id="job-{{ job.id }}">
+  <div class="listing-card-heading">
+    <div>
+      <h3>{{ job.title|tr }}</h3>
+      <p class="listing-company">{{ job.company_label }}</p>
+    </div>
+    {% if match is not None %}<span class="match-badge"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m12 3 1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z"/><path d="m19 15 .9 2.1L22 18l-2.1.9L19 21l-.9-2.1L16 18l2.1-.9L19 15Z"/></svg>{{ match }}% {% t "match" %}</span>{% endif %}
+  </div>
+  <div class="listing-meta">
+    <span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>{% if job.location_label %}{{ job.location_label }}{% else %}{% t "Location not specified" %}{% endif %}</span>
+    <span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18m-11 0v2h4v-2"/></svg>{{ job.get_job_type_display|tr }}</span>
+    <span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 4h12M6 8h12M8 4c5 0 5 7 0 7H6l9 9"/></svg>{% if job.salary_label %}{{ job.salary_label }}{% else %}{% t "Salary not specified" %}{% endif %}</span>
+  </div>
+  {% if job.skills_list %}
+  <div class="listing-skills">
+    <span class="meta-label">{% t "Required skills" %}</span>
+    <div class="skill-tags">{% for skill in job.skills_list %}<span>{{ skill|tr }}</span>{% endfor %}</div>
+  </div>
+  {% endif %}
+  <div class="listing-actions">
+      <button class="button button-secondary" type="button" data-job-details="job-details-{{ job.id }}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>{% t "View Details" %}</button>
+    {% if applied %}
+      <button class="button" type="button" disabled>{% t "Applied" %}</button>
+    {% else %}
+      <form method="post" action="{% url 'workers:apply' job.id %}">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.get_full_path }}">
+        <button class="button" type="submit">{% t "Apply Now" %}</button>
+      </form>
+    {% endif %}
+  </div>
+
+  <div class="job-details-backdrop ks-hidden" id="job-details-{{ job.id }}" data-job-modal>
+    <section class="job-details-modal" role="dialog" aria-modal="true" aria-label="{% t 'Job details' %}">
+      <button class="job-details-close" type="button" data-job-close aria-label="{% t 'Close job details' %}"><svg aria-hidden="true" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></svg></button>
+      <span class="eyebrow">{% t "Job details" %}</span>
+      <h2>{{ job.title|tr }}</h2>
+      <p class="listing-company">{{ job.company_label }}</p>
+      <div class="job-details-meta">
+        <span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg>{% if job.location_label %}{{ job.location_label }}{% else %}{% t "Location not specified" %}{% endif %}</span>
+        <span><svg aria-hidden="true" viewBox="0 0 24 24"><rect x="3" y="7" width="18" height="14" rx="2"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M3 12h18m-11 0v2h4v-2"/></svg>{{ job.get_job_type_display|tr }}</span>
+        <span><svg aria-hidden="true" viewBox="0 0 24 24"><path d="M6 4h12M6 8h12M8 4c5 0 5 7 0 7H6l9 9"/></svg>{% if job.salary_label %}{{ job.salary_label }}{% else %}{% t "Salary not specified" %}{% endif %}</span>
+      </div>
+      {% if job.description %}
+      <div class="job-details-description">
+        <h3>{% t "Description" %}</h3>
+        <p>{{ job.description }}</p>
+      </div>
+      {% endif %}
+      {% if job.skills_list %}
+      <div class="listing-skills">
+        <span class="meta-label">{% t "Required skills" %}</span>
+        <div class="skill-tags">{% for skill in job.skills_list %}<span>{{ skill|tr }}</span>{% endfor %}</div>
+      </div>
+      {% endif %}
+      <div class="form-actions">
+        <button class="button button-secondary" type="button" data-job-close>{% t "Close" %}</button>
+        {% if not applied %}
+        <form method="post" action="{% url 'workers:apply' job.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button class="button" type="submit">{% t "Apply Now" %}</button>
+        </form>
+        {% endif %}
+      </div>
+    </section>
+  </div>
+</article>

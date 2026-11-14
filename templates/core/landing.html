@@ -1,0 +1,148 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}KaamSetu — {% t "Connecting Skills. Creating Opportunities." %}{% endblock %}
+
+{% block content %}
+<main>
+  <section class="landing-hero" aria-label="{% t 'KaamSetu introduction' %}">
+    <div class="hero-poster" aria-hidden="true"></div>
+    <div class="hero-grain" aria-hidden="true"></div>
+
+    <div class="landing-hero-content">
+      <div class="hero-location"><i data-lucide="map-pin"></i> {% t "MADE FOR EVERY VILLAGE, EVERY GENERATION" %}</div>
+      <span class="hero-kicker"><i data-lucide="sparkles"></i> {% t "AI-powered skill assessment & intelligent job matching" %}</span>
+      <h1>{% t "Connecting Skills." %}<br><em>{% t "Creating Opportunities." %}</em></h1>
+      <p>{% t "KaamSetu empowers skilled workers, verifies their abilities through AI and connects them with trusted employers." %}</p>
+      <div class="landing-actions">
+        <a class="button hero-primary" href="{% url 'core:select_role' %}?role=worker">{% t "Find Work" %} <i data-lucide="arrow-right"></i></a>
+        <a class="button hero-secondary" href="{% url 'core:select_role' %}?role=employer">{% t "Hire Talent" %}</a>
+      </div>
+      <div class="hero-proof">
+        <span><i data-lucide="badge-check"></i> {% t "Skills before degrees" %}</span>
+        <span><i data-lucide="users-round"></i> {% t "Built for local communities" %}</span>
+        <span class="hero-languages">{% t "Available in 20+ Indian languages" %}</span>
+      </div>
+    </div>
+
+    <div class="hero-community-card">
+      <div class="community-avatars" aria-hidden="true"><span>आ</span><span>क</span><span>र</span><span>+</span></div>
+      <div><strong>{% t "Every generation brings a skill" %}</strong><small>{% t "Find work. Share experience. Grow together." %}</small></div>
+      <i data-lucide="handshake"></i>
+    </div>
+    <a class="hero-scroll" href="#about"><span>{% t "MEET KAAMSETU" %}</span><i data-lucide="arrow-down"></i></a>
+  </section>
+
+  <section class="landing-section about-section" id="about">
+    <div class="section-copy">
+      <span class="eyebrow">{% t "About KaamSetu" %}</span>
+      <h2>{% t "A bridge between talent and opportunity" %}</h2>
+      <p>{% t "KaamSetu helps workers show what they can do and helps employers find reliable local talent. We make practical skills easier to discover, value, and connect to work." %}</p>
+      <p>{% t "Our mission is to make dignified work more accessible. Our vision is a future where a person’s skills can take them anywhere." %}</p>
+      <a class="text-link" href="{% url 'core:select_role' %}">{% t "Join the community" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+    <div class="about-visual">
+      <img class="about-image" src="{% static 'images/mechanic-at-work.webp' %}" loading="lazy" decoding="async" alt="An Indian mechanic inspecting engine components in a workshop">
+    </div>
+  </section>
+
+  <section class="landing-section steps-section" id="how-it-works">
+    <div class="section-heading">
+      <span class="eyebrow">{% t "Simple from day one" %}</span>
+      <h2>{% t "How KaamSetu works" %}</h2>
+      <p>{% t "A few small steps can lead to your next opportunity." %}</p>
+    </div>
+    <div class="steps-grid">
+      <article class="step-card"><span class="step-number">01</span><h3>{% t "Register" %}</h3><p>{% t "Choose worker or employer account." %}</p></article>
+      <article class="step-card"><span class="step-number">02</span><h3>{% t "Create your profile" %}</h3><p>{% t "Add your experience and preferences." %}</p></article>
+      <article class="step-card"><span class="step-number">03</span><h3>{% t "Showcase your skills" %}</h3><p>{% t "Share your work and skills." %}</p></article>
+      <article class="step-card"><span class="step-number">04</span><h3>{% t "Get matched" %}</h3><p>{% t "Get recommendations that fit." %}</p></article>
+      <article class="step-card"><span class="step-number">05</span><h3>{% t "Get hired" %}</h3><p>{% t "Connect, apply, and move forward." %}</p></article>
+    </div>
+  </section>
+
+  <section class="landing-section audience-section" id="for-everyone">
+    <div class="section-heading">
+      <span class="eyebrow">{% t "Built for both sides" %}</span>
+      <h2>{% t "For Workers. For Employers." %}</h2>
+      <p>{% t "One platform, two clear journeys — whether you are looking for work or looking for talent." %}</p>
+    </div>
+    <div class="audience-grid">
+      <article class="audience-card audience-worker">
+        <span class="audience-icon"><i data-lucide="hard-hat"></i></span>
+        <h3>{% t "For Workers" %}</h3>
+        <p>{% t "Show what you can do, get your skills recognised, and find work close to home." %}</p>
+        <ul>
+          <li><i data-lucide="check"></i> {% t "Free profile with your skills and experience" %}</li>
+          <li><i data-lucide="check"></i> {% t "AI skill assessment from a short work video" %}</li>
+          <li><i data-lucide="check"></i> {% t "Job recommendations matched to your skills" %}</li>
+        </ul>
+        <a class="button" href="{% url 'core:select_role' %}?role=worker">{% t "Find Work" %} <i data-lucide="arrow-right"></i></a>
+      </article>
+      <article class="audience-card audience-employer">
+        <span class="audience-icon"><i data-lucide="briefcase-business"></i></span>
+        <h3>{% t "For Employers" %}</h3>
+        <p>{% t "Post a job in minutes and connect with workers whose skills are already verified." %}</p>
+        <ul>
+          <li><i data-lucide="check"></i> {% t "Post jobs with clear skills and wages" %}</li>
+          <li><i data-lucide="check"></i> {% t "Browse worker profiles with assessed skills" %}</li>
+          <li><i data-lucide="check"></i> {% t "Manage applications and hiring in one place" %}</li>
+        </ul>
+        <a class="button" href="{% url 'core:select_role' %}?role=employer">{% t "Hire Talent" %} <i data-lucide="arrow-right"></i></a>
+      </article>
+    </div>
+  </section>
+
+  <section class="landing-section trade-showcase" aria-labelledby="trade-showcase-title">
+    <div class="section-heading">
+      <span class="eyebrow">{% t "Skills that keep communities moving" %}</span>
+      <h2 id="trade-showcase-title">{% t "Skilled work, seen clearly" %}</h2>
+      <p>{% t "KaamSetu helps employers discover skilled people across the trades that power everyday life." %}</p>
+    </div>
+    <div class="trade-showcase-grid">
+      <article class="trade-showcase-card"><img src="{% static 'images/electrician-at-work.webp' %}" loading="lazy" decoding="async" alt="Electrician carefully testing a professional electrical panel"><div><span>{% t "Electrical" %}</span><h3>{% t "Electricians & technicians" %}</h3></div></article>
+      <article class="trade-showcase-card"><img src="{% static 'images/plumber-at-work.webp' %}" loading="lazy" decoding="async" alt="Plumber fitting a pipe with professional tools"><div><span>{% t "Plumbing" %}</span><h3>{% t "Plumbers & installers" %}</h3></div></article>
+      <article class="trade-showcase-card"><img src="{% static 'images/mechanic-at-work.webp' %}" loading="lazy" decoding="async" alt="Mechanic inspecting engine components in a workshop"><div><span>{% t "Mechanical" %}</span><h3>{% t "Mechanics & fabricators" %}</h3></div></article>
+    </div>
+  </section>
+
+  <section class="landing-section ai-section" id="ai-assessment">
+    <div class="section-copy">
+      <span class="eyebrow">{% t "AI-Powered Skill Assessment" %}</span>
+      <h2>{% t "Your skills, seen clearly" %}</h2>
+      <p>{% t "Workers upload a short video of themselves doing real work. KaamSetu analyses the evidence and turns practical experience into a clear, shareable skills profile — no certificates or degrees required." %}</p>
+      <ul class="ai-points">
+        <li><i data-lucide="scan-eye"></i> {% t "Detected skills backed by visible evidence" %}</li>
+        <li><i data-lucide="gauge"></i> {% t "A skill level for each skill you demonstrate" %}</li>
+        <li><i data-lucide="shield-check"></i> {% t "You approve every skill before it goes live" %}</li>
+      </ul>
+      <a class="text-link" href="{% url 'core:select_role' %}?role=worker">{% t "Assess my skills" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+    <div class="ai-visual">
+      <img src="{% static 'images/electrician-at-work.webp' %}" loading="lazy" decoding="async" alt="An electrician carefully testing a professional electrical panel">
+    </div>
+  </section>
+
+  <section class="landing-section feature-section" id="why-kaamsetu">
+    <div class="section-heading">
+      <span class="eyebrow">{% t "Made for real work" %}</span>
+      <h2>{% t "Why choose KaamSetu" %}</h2>
+    </div>
+    <div class="feature-grid">
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="chart-no-axes-combined"></i></span><h3>{% t "AI skill analysis" %}</h3><p>{% t "Turn practical experience into a clear, shareable skills profile." %}</p></article>
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="briefcase-business"></i></span><h3>{% t "Smart job matching" %}</h3><p>{% t "Find nearby opportunities that fit your skills and preferences." %}</p></article>
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="shield-check"></i></span><h3>{% t "Safer hiring" %}</h3><p>{% t "Clear consent and transparent application updates at every step." %}</p></article>
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="globe-2"></i></span><h3>{% t "Local languages" %}</h3><p>{% t "Use the platform in your own language." %}</p></article>
+    </div>
+  </section>
+
+  <section class="landing-cta">
+    <div>
+      <span class="eyebrow">{% t "Your next step starts here" %}</span>
+      <h2>{% t "Put your skills to work." %}</h2>
+      <p>{% t "Join KaamSetu and make your next opportunity count." %}</p>
+    </div>
+    <a class="button" href="{% url 'core:select_role' %}">{% t "Get Started" %} <i data-lucide="arrow-right"></i></a>
+  </section>
+</main>
+{% endblock %}

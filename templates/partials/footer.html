@@ -1,0 +1,32 @@
+{% load static ks_i18n %}
+<footer class="site-footer">
+  <div class="footer-main">
+    <section class="footer-about">
+      <a class="footer-brand" href="{% url 'core:landing' %}" aria-label="KaamSetu home"><img src="{% static 'images/kaamsetu-brand-logo.png' %}" alt="KaamSetu — Connecting Skills. Creating Opportunities."></a>
+      <p>{% t "Connecting skills to opportunity, and people to meaningful work." %}</p>
+    </section>
+    <section>
+      <h2>{% t "About KaamSetu" %}</h2>
+      <a href="{% url 'core:landing' %}#about">{% t "Our Mission" %}</a>
+      <a href="mailto:support@kaamsetu.in">{% t "Contact Us" %}</a>
+    </section>
+    <section>
+      <h2>{% t "For everyone" %}</h2>
+      <a href="{% url 'core:landing' %}#how-it-works">{% t "How it works" %}</a>
+      <a href="{% url 'core:select_role' %}?role=worker">{% t "Find Work" %}</a>
+      <a href="{% url 'core:select_role' %}?role=employer">{% t "Hire Workers" %}</a>
+    </section>
+    <section>
+      <h2>{% t "Legal" %}</h2>
+      <a href="{% url 'core:privacy' %}">{% t "Privacy Policy" %}</a>
+      <a href="{% url 'core:terms' %}">{% t "Terms and Conditions" %}</a>
+    </section>
+    <section>
+      <h2>{% t "Your next step" %}</h2>
+      <a href="{% url 'accounts:register' %}?role=worker">{% t "Create worker account" %}</a>
+      <a href="{% url 'accounts:register' %}?role=employer">{% t "Create employer account" %}</a>
+      <a href="{% url 'accounts:login' %}">{% t "Login" %}</a>
+    </section>
+  </div>
+  <div class="footer-bottom">&copy; {% now "Y" %} KaamSetu. {% t "All rights reserved." %}</div>
+</footer>

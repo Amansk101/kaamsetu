@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "How it works" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main>
+  <section class="landing-section steps-section">
+    <div class="section-heading">
+      <span class="eyebrow">{% t "Simple from day one" %}</span>
+      <h2>{% t "How it works" %}</h2>
+      <p>{% t "A few small steps can lead to your next opportunity." %}</p>
+    </div>
+    <div class="steps-grid">
+      <article class="step-card"><span class="step-number">01</span><h3>{% t "Register" %}</h3><p>{% t "Choose worker or employer account." %}</p></article>
+      <article class="step-card"><span class="step-number">02</span><h3>{% t "Create your profile" %}</h3><p>{% t "Add your experience and preferences." %}</p></article>
+      <article class="step-card"><span class="step-number">03</span><h3>{% t "Showcase your skills" %}</h3><p>{% t "Share your work and skills." %}</p></article>
+      <article class="step-card"><span class="step-number">04</span><h3>{% t "Get matched" %}</h3><p>{% t "Get recommendations that fit." %}</p></article>
+      <article class="step-card"><span class="step-number">05</span><h3>{% t "Get hired" %}</h3><p>{% t "Connect, apply, and move forward." %}</p></article>
+    </div>
+  </section>
+
+  <section class="landing-section feature-section">
+    <div class="section-heading">
+      <span class="eyebrow">{% t "Made for real work" %}</span>
+      <h2>{% t "Tools that bring work within reach" %}</h2>
+    </div>
+    <div class="feature-grid">
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="chart-no-axes-combined"></i></span><h3>{% t "AI skill analysis" %}</h3><p>{% t "Turn practical experience into a clear, shareable skills profile." %}</p></article>
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="briefcase-business"></i></span><h3>{% t "Smart job matching" %}</h3><p>{% t "Find nearby opportunities that fit your skills and preferences." %}</p></article>
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="shield-check"></i></span><h3>{% t "Safer hiring" %}</h3><p>{% t "Clear consent and transparent application updates at every step." %}</p></article>
+      <article class="feature-card"><span class="feature-icon"><i data-lucide="globe-2"></i></span><h3>{% t "Local languages" %}</h3><p>{% t "Use the platform in your own language." %}</p></article>
+    </div>
+  </section>
+
+  <section class="landing-cta">
+    <div>
+      <span class="eyebrow">{% t "Your next step starts here" %}</span>
+      <h2>{% t "Put your skills to work." %}</h2>
+      <p>{% t "Join KaamSetu and make your next opportunity count." %}</p>
+    </div>
+    <a class="button" href="{% url 'core:select_role' %}">{% t "Get Started" %} <i data-lucide="arrow-right"></i></a>
+  </section>
+</main>
+{% endblock %}

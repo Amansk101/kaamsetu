@@ -1,0 +1,105 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Dashboard" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Dashboard" %}{% endblock %}
+
+{% block dashboard_content %}
+<section class="employer-welcome employer-welcome--video">
+  <div>
+    <span class="eyebrow">{% t "Hire with confidence" %}</span>
+    <h2>{% t "Find the right skills, closer to home." %}</h2>
+    <p>{% t "Discover local talent and build a team that gets work done." %}</p>
+    <div class="employer-actions">
+      <a class="button" href="{% url 'employers:post_job' %}">{% t "Post a Job" %} <i data-lucide="arrow-right"></i></a>
+      <a class="button button-secondary" href="{% url 'employers:workers' %}">{% t "Find Workers" %}</a>
+    </div>
+  </div>
+</section>
+
+<section class="metric-grid employer-metrics">
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="briefcase-business"></i></span>
+    <span class="metric-label">{% t "Active jobs" %}</span>
+    <strong>{{ active_jobs }}</strong>
+    <small>{{ jobs|length }} {% t "published by you" %}</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="users-round"></i></span>
+    <span class="metric-label">{% t "Matched workers" %}</span>
+    <strong>{{ matched_workers_count }}</strong>
+    <small>{% t "Workers matched to your open roles" %}</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="clock-3"></i></span>
+    <span class="metric-label">{% t "Applications" %}</span>
+    <strong>{{ applications|length }}</strong>
+    <small>{% t "Awaiting your review" %}</small>
+  </article>
+  <article class="metric-card">
+    <span class="metric-icon"><i data-lucide="circle-check"></i></span>
+    <span class="metric-label">{% t "Hired workers" %}</span>
+    <strong>{{ hired_count }}</strong>
+    <small>{% t "Successful connections" %}</small>
+  </article>
+</section>
+
+<a class="profile-progress-card employer-profile-progress" href="{% url 'employers:settings' %}">
+  <div class="progress-copy"><span class="metric-icon profile-completion-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#526E50" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2"/><path d="M9 21V7h6v14M9 11h2m2 0h2M9 15h2m2 0h2"/></svg></span><div><strong>{% t "Business profile" %}</strong><span>{% t "Add your business details so workers know who is hiring." %}</span></div></div>
+  <div class="completion-value">{{ profile.profile_completion }}%</div>
+  <div class="completion-track"><span style="width: {{ profile.profile_completion }}%"></span></div>
+</a>
+
+<section class="dashboard-panel pipeline-panel">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "Hiring activity" %}</span><h2>{% t "Application pipeline" %}</h2></div>
+    <a href="{% url 'employers:applications' %}">{% t "Review applications" %} <i data-lucide="arrow-right"></i></a>
+  </div>
+  {% for stage in application_pipeline %}
+    <div class="pipeline-row">
+      <div class="pipeline-label"><span>{{ stage.label|tr }}</span><strong>{{ stage.count }}</strong></div>
+      <div class="pipeline-track" role="img" aria-label="{{ stage.label }}: {{ stage.count }}"><span style="width: {{ stage.share }}%"></span></div>
+    </div>
+  {% empty %}
+    <div class="empty-state compact-empty"><span class="empty-state-icon"><i data-lucide="chart-no-axes-column-increasing"></i></span><h3>{% t "No applications yet" %}</h3><p>{% t "Applications for your published jobs will appear here." %}</p><a class="button" href="{% url 'employers:post_job' %}">{% t "Post a Job" %}</a></div>
+  {% endfor %}
+</section>
+
+{% if recent_applications %}
+<section class="dashboard-panel employer-worker-panel">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "New requests" %}</span><h2>{% t "Recent applications" %}</h2></div>
+    <a href="{% url 'employers:applications' %}">{% t "View all applications" %} <i data-lucide="arrow-right"></i></a>
+  </div>
+  <div class="application-list">
+    {% for application in recent_applications %}
+      <article class="application-card">
+        <div class="company-avatar">{{ application.worker.full_name|slice:':1'|upper }}</div>
+        <div class="application-main">
+          <span class="application-company">{{ application.job.company_label }}</span>
+          <h3>{{ application.worker.full_name }} — {{ application.job.title|tr }}</h3>
+          <div class="application-meta">
+            <span><i data-lucide="clock-3"></i>{{ application.status|tr }}</span>
+          </div>
+        </div>
+        <a class="button button-secondary" href="{% url 'employers:applications' %}">{% t "Review request" %}</a>
+      </article>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<section class="dashboard-panel employer-worker-panel">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "Skills and location matches" %}</span><h2>{% t "Workers to explore" %}</h2></div>
+    <a href="{% url 'employers:workers' %}">{% t "Browse workers" %} <i data-lucide="arrow-right"></i></a>
+  </div>
+  <div class="employer-worker-grid">
+    {% for item in ranked_workers %}
+      {% include 'partials/worker_card.html' with worker=item.worker match=item.match %}
+    {% empty %}
+      <p class="ks-muted">{% t "No worker profiles are available yet." %}</p>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

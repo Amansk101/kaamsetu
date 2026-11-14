@@ -1,0 +1,33 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load ks_i18n %}
+
+{% block title %}{{ job.title }} â€” {% t "My Jobs" %}{% endblock %}
+{% block dashboard_title %}{% t "Job details" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div><span class="eyebrow">{% t "Your listing" %}</span><h2>{{ job.title|tr }}</h2><p>{{ job.company_label }}</p></div>
+  <a class="button button-secondary" href="{% url 'employers:jobs' %}"><i data-lucide="arrow-left"></i>{% t "Back to My Jobs" %}</a>
+</div>
+<article class="dashboard-panel employer-job-detail">
+  <div class="employer-job-detail-heading"><span class="job-status-pill job-status-{{ job.status }}">{{ job.get_status_display|tr }}</span><span>{% t "Posted" %} {{ job.created_at|date:"d M Y" }}</span></div>
+  <p class="employer-job-detail-description">{{ job.description|default:job.raw_description|linebreaksbr }}</p>
+  <dl class="employer-job-detail-grid">
+    <div><dt>{% t "Work type" %}</dt><dd>{{ job.get_job_type_display|tr }}</dd></div>
+    <div><dt>{% t "Salary" %}</dt><dd>{{ job.salary_label|default:"Not specified" }}</dd></div>
+    <div><dt>{% t "Location" %}</dt><dd>{{ job.location_label|default:"Not specified" }}</dd></div>
+    <div><dt>{% t "Vacancies" %}</dt><dd>{{ job.workers_needed }}</dd></div>
+  </dl>
+  {% if job.skills_list %}<div class="employer-job-skills"><span>{% t "Required skills" %}</span><div class="skill-tags">{% for skill in job.skills_list %}<span>{{ skill|tr }}</span>{% endfor %}</div></div>{% endif %}
+  <div class="employer-job-stats">
+    <div><strong>{{ job.applicant_count }}</strong><span>{% t "Applications" %}</span></div>
+    <div><strong>{{ job.pending_count }}</strong><span>{% t "Pending" %}</span></div>
+    <div><strong>{{ job.shortlisted_count }}</strong><span>{% t "Shortlisted" %}</span></div>
+  </div>
+  <div class="employer-job-card-actions">
+    <a class="button button-secondary" href="{% url 'employers:edit_job' job.id %}"><i data-lucide="pencil"></i>{% t "Edit Job" %}</a>
+    <a class="button button-secondary" href="{% url 'employers:applications' %}?job={{ job.id }}"><i data-lucide="file-check-2"></i>{% t "View Applications" %}</a>
+    <a class="button button-secondary" href="{% url 'hiring:job_candidates' job.id %}"><i data-lucide="users-round"></i>{% t "Manage Candidates" %}</a>
+  </div>
+</article>
+{% endblock %}

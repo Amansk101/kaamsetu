@@ -1,0 +1,90 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Settings" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Settings" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Keep your hiring profile current" %}</span>
+    <h2>{% t "Employer settings" %}</h2>
+    <p>{% t "Update your business details and notification preferences." %}</p>
+  </div>
+</div>
+
+<div class="employer-photo-strip">
+  <img src="{% static 'images/indian-employer-worker-connection.webp' %}" alt="An Indian employer greeting a skilled worker at a construction site" loading="lazy" decoding="async">
+  <div><span>{% t "YOUR BUSINESS PROFILE" %}</span><strong>{% t "Help skilled workers understand your workplace." %}</strong></div>
+</div>
+
+<form class="form-section settings-form" method="post" novalidate>
+  {% csrf_token %}
+  <div class="form-section-heading">
+    <span>01</span>
+    <div><h3>{% t "Business details" %}</h3><p>{% t "Shown to workers on your job listings." %}</p></div>
+  </div>
+
+  {% if form.non_field_errors %}
+    <div class="form-error-block" role="alert">
+      {% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+    </div>
+  {% endif %}
+
+  <div class="form-grid">
+    <label>{% t "Business / employer name" %} *
+      {{ form.business_name }}
+      {% if form.business_name.errors %}<span class="field-error">{{ form.business_name.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Business type" %}
+      {{ form.business_type }}
+      {% if form.business_type.errors %}<span class="field-error">{{ form.business_type.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Contact person" %}
+      {{ form.contact_name }}
+      {% if form.contact_name.errors %}<span class="field-error">{{ form.contact_name.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Date of birth" %} <span class="optional">{% t "Private · age is calculated automatically" %}{% if profile.contact_age %} · {{ profile.contact_age }}{% t " years old" %}{% endif %}</span>
+      {{ form.contact_date_of_birth }}
+      {% if form.contact_date_of_birth.errors %}<span class="field-error">{{ form.contact_date_of_birth.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "City" %}
+      {{ form.city }}
+      {% if form.city.errors %}<span class="field-error">{{ form.city.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "State" %}
+      {{ form.state }}
+      {% if form.state.errors %}<span class="field-error">{{ form.state.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "PIN code" %}
+      {{ form.pincode }}
+      {% if form.pincode.errors %}<span class="field-error">{{ form.pincode.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label>{% t "Address" %}
+      {{ form.address }}
+      {% if form.address.errors %}<span class="field-error">{{ form.address.errors|join:", " }}</span>{% endif %}
+    </label>
+    <label class="span-two">{% t "Business description" %}
+      {{ form.description }}
+      {% if form.description.errors %}<span class="field-error">{{ form.description.errors|join:", " }}</span>{% endif %}
+    </label>
+  </div>
+
+  <div class="form-section-heading settings-subheading">
+    <span>02</span>
+    <div><h3>{% t "Notifications" %}</h3><p>{% t "Choose what you want to hear about." %}</p></div>
+  </div>
+  <label class="checkbox-label">{{ form.job_alerts }} {% t "Show job and application updates" %}</label>
+
+  <div class="form-actions">
+    <button class="button" type="submit">{% t "Save settings" %}</button>
+  </div>
+</form>
+<section class="form-section settings-form">
+  <div class="form-section-heading">
+    <span>03</span>
+    <div><h3>{% t "Account security" %}</h3><p>{% t "Use a strong password to keep your account secure." %}</p></div>
+  </div>
+  <a class="button button-secondary" href="{% url 'accounts:password_change' %}">{% t "Change password" %}</a>
+</section>
+{% endblock %}

@@ -1,0 +1,6 @@
+<div class="mb-3">
+  <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {{ field }}
+  {% if field.help_text %}<div class="tiny">{{ field.help_text }}</div>{% endif %}
+  {% for e in field.errors %}<div class="tiny" style="color:#f87171">{{ e }}</div>{% endfor %}
+</div>

@@ -1,0 +1,65 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load ks_i18n %}
+
+{% block title %}{% t "Hired Workers" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Hired Workers" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Successful connections" %}</span>
+    <h2>{% t "Hired workers" %}</h2>
+    <p>{% t "Track follow-up milestones at Day 7, Day 30 and Day 90." %}</p>
+  </div>
+  <span class="recommend-count"><i data-lucide="circle-check"></i>{{ total }} {% t "hired" %}</span>
+</div>
+
+{% if rows %}
+  <section class="application-list">
+    {% for row in rows %}
+      <article class="application-card hired-card">
+        <div class="company-avatar">{{ row.application.worker.full_name|slice:':1'|upper }}</div>
+        <div class="application-main">
+          <span class="application-company">{{ row.application.job.company_label }}</span>
+          <h3>{{ row.application.worker.full_name }} — {{ row.application.job.title|tr }}</h3>
+          <div class="application-meta">
+            <span><i data-lucide="map-pin"></i>{% if row.application.worker.location_display %}{{ row.application.worker.location_display }}{% else %}{% t "Location not specified" %}{% endif %}</span>
+            <span><i data-lucide="calendar-days"></i>{% t "Hired" %} {{ row.application.updated_at|date:"d M Y" }}</span>
+          </div>
+          <div class="milestone-row">
+            {% for milestone in row.application.feedback.all %}
+              <span class="milestone-chip is-done"><i data-lucide="check"></i>{% if milestone.milestone == 7 %}{% t "Day 7" %}{% elif milestone.milestone == 30 %}{% t "Day 30" %}{% else %}{% t "Day 90" %}{% endif %} · {{ milestone.rating }}/5</span>
+            {% endfor %}
+            {% if 7 in row.done %}{% else %}<span class="milestone-chip">{% t "Day 7" %}</span>{% endif %}
+            {% if 30 in row.done %}{% else %}<span class="milestone-chip">{% t "Day 30" %}</span>{% endif %}
+            {% if 90 in row.done %}{% else %}<span class="milestone-chip">{% t "Day 90" %}</span>{% endif %}
+          </div>
+        </div>
+        <span class="application-status status-hired">{{ row.application.status|tr }}</span>
+        <div class="application-actions">
+          {% if row.application.worker.mobile %}
+            <a class="call-link" href="tel:{{ row.application.worker.mobile|urlencode }}"><i data-lucide="phone-call" aria-hidden="true"></i>{% t "Call" %}</a>
+          {% endif %}
+          {% if row.application.worker.email or row.application.worker.user.email %}
+            <a class="call-link" target="_blank" rel="noopener noreferrer" href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to={{ row.application.worker.email|default:row.application.worker.user.email|urlencode }}"><i data-lucide="mail" aria-hidden="true"></i>{% t "Send Email" %}</a>
+            <a class="call-link" href="mailto:{{ row.application.worker.email|default:row.application.worker.user.email|urlencode }}">{% t "Open email app" %}</a>
+          {% endif %}
+          {% if row.next %}
+            <a class="button button-secondary" href="{% url 'employers:feedback' %}?application={{ row.application.id }}&day={{ row.next }}">{% t "Add follow-up" %}</a>
+          {% else %}
+            <span class="ks-muted">{% t "All follow-ups completed" %}</span>
+          {% endif %}
+          <a href="{% url 'employers:worker_detail' row.application.worker.id %}">{% t "View worker" %}</a>
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+{% else %}
+  <div class="empty-state">
+    <span class="empty-state-icon"><i data-lucide="circle-user-round"></i></span>
+    <h3>{% t "No hired workers yet" %}</h3>
+    <p>{% t "Mark an application as Hired to start the Day 7 / 30 / 90 follow-up flow." %}</p>
+    <a class="button" href="{% url 'employers:applications' %}">{% t "Review applications" %} <i data-lucide="arrow-right"></i></a>
+  </div>
+{% endif %}
+{% endblock %}

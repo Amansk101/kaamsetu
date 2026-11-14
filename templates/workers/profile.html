@@ -1,0 +1,96 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "My Profile" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "My Profile" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Tell your story" %}</span>
+    <h2>{% t "Build your worker profile" %}</h2>
+    <p>{% t "Share your experience so employers can find the right skills for their team." %}</p>
+  </div>
+  <div class="profile-completion-mini">
+    <strong>{{ profile.profile_completion }}%</strong>
+    <span>{% t "Profile complete" %}</span>
+  </div>
+</div>
+
+<form class="profile-form" method="post" enctype="multipart/form-data" novalidate data-auth-form>
+  {% csrf_token %}
+  <fieldset class="profile-fieldset">
+    <section class="form-section">
+      <div class="form-section-heading">
+        <span>01</span>
+        <div><h3>{% t "Personal details" %}</h3><p>{% t "Basic information about you." %}</p></div>
+      </div>
+      <div class="photo-upload">
+        <div class="user-avatar large" data-photo-avatar>
+          {% if profile.photo %}<img src="{{ profile.photo.url }}" alt="{{ profile.full_name }}" data-profile-photo-preview>{% else %}<span data-avatar-initial>{{ profile.full_name|slice:':1'|upper|default:'W' }}</span>{% endif %}
+        </div>
+        <label class="upload-photo-label">
+          <i data-lucide="camera"></i> {% t "Add profile photo" %}
+          {{ form.photo }}
+        </label>
+        <small data-photo-feedback aria-live="polite">{% t "JPG or PNG, up to 5 MB" %}</small>
+        {% if form.photo.errors %}<p class="field-error">{{ form.photo.errors|join:", " }}</p>{% endif %}
+      </div>
+      <div class="form-grid">
+        <label>{% t "Full name" %} {{ form.full_name }}{% if form.full_name.errors %}<span class="field-error">{{ form.full_name.errors|join:", " }}</span>{% endif %}</label>
+        <label>{% t "Date of birth" %} {{ form.date_of_birth }}<span class="field-help">{% t "Age is calculated automatically" %}{% if profile.age %} · {{ profile.age }}{% t " years old" %}{% endif %}</span>{% if form.date_of_birth.errors %}<span class="field-error">{{ form.date_of_birth.errors|join:", " }}</span>{% endif %}</label>
+        <label>{% t "Gender" %} <span class="optional">{% t "Optional" %}</span> {{ form.gender }}</label>
+        <label>{% t "Mobile number" %} {{ form.mobile }}{% if form.mobile.errors %}<span class="field-error">{{ form.mobile.errors|join:", " }}</span>{% endif %}</label>
+        <label>{% t "Email address" %} {{ form.email }}{% if form.email.errors %}<span class="field-error">{{ form.email.errors|join:", " }}</span>{% endif %}</label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-section-heading">
+        <span>02</span>
+        <div><h3>{% t "Where you’re based" %}</h3><p>{% t "We’ll prioritize opportunities in your area." %}</p></div>
+      </div>
+      <div class="form-grid">
+        <label>{% t "City / village / town" %} {{ form.village }}</label>
+        <label>{% t "Taluka" %} {{ form.taluka }}</label>
+        <label>{% t "District" %} {{ form.district }}</label>
+        <label>{% t "State" %} {{ form.state }}</label>
+        <label>{% t "Pincode" %} {{ form.pincode }}{% if form.pincode.errors %}<span class="field-error">{{ form.pincode.errors|join:", " }}</span>{% endif %}</label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-section-heading">
+        <span>03</span>
+        <div><h3>{% t "Education" %}</h3><p>{% t "Include your latest education or training." %}</p></div>
+      </div>
+      <div class="form-grid">
+        <label>{% t "Education level" %} {{ form.education_level }}</label>
+        <label>{% t "School / college" %} {{ form.school }}</label>
+        <label>{% t "Qualification" %} {{ form.qualification }}</label>
+      </div>
+    </section>
+
+    <section class="form-section">
+      <div class="form-section-heading">
+        <span>04</span>
+        <div><h3>{% t "Work preferences" %}</h3><p>{% t "Help us find opportunities that suit you." %}</p></div>
+      </div>
+      <div class="form-grid">
+        <label class="span-two">{% t "Skills" %} <span class="optional">{% t "Separate with commas" %}</span> {{ form.skills }}</label>
+        <label>{% t "Work experience" %} {{ form.experience }}</label>
+        <label>{% t "Preferred job" %} {{ form.preferred_job }}</label>
+        <label>{% t "Expected monthly salary (₹)" %} {{ form.expected_salary }}</label>
+        <label>{% t "Work availability" %} {{ form.availability }}</label>
+      </div>
+    </section>
+  </fieldset>
+
+  <div class="form-actions">
+    <button class="button button-secondary" type="submit" data-submit-btn>{% t "Save Profile" %}</button>
+    <a class="button" href="{% url 'workers:upload_video' %}">{% t "Continue" %} <i data-lucide="arrow-right"></i></a>
+  </div>
+</form>
+
+<div class="next-step-hint">{% t "Next step:" %} <a href="{% url 'workers:upload_video' %}">{% t "Upload a short video to showcase your skills" %} <i data-lucide="arrow-right"></i></a></div>
+{% endblock %}

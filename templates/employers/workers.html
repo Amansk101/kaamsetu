@@ -1,0 +1,46 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Find Workers" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Find Workers" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Talent near you" %}</span>
+    <h2>{% t "Find local workers" %}</h2>
+    <p>{% t "Search by name, skill or location and review matched profiles." %}</p>
+  </div>
+  <span class="recommend-count"><i data-lucide="users-round"></i>{{ total }} {% t "workers" %}</span>
+</div>
+
+<form class="job-search-panel worker-search" method="get" role="search">
+  <label class="search-field"><i data-lucide="search"></i>
+    <input type="search" name="q" value="{{ query }}" placeholder="{% t 'Name, skill, village or district' %}" aria-label="{% t 'Search workers' %}">
+  </label>
+  <button class="button button-secondary" type="submit">{% t "Search" %}</button>
+</form>
+
+{% if results %}
+  <div class="employer-worker-grid">
+    {% for item in results %}
+      {% include 'partials/worker_card.html' with worker=item.worker match=item.match %}
+    {% endfor %}
+  </div>
+
+  {% if results.has_other_pages %}
+    <nav class="ks-pagination" aria-label="{% t 'Pagination' %}">
+      {% if results.has_previous %}<a href="?page={{ results.previous_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">{% t "Previous" %}</a>{% endif %}
+      <span class="is-current">{{ results.number }} / {{ results.paginator.num_pages }}</span>
+      {% if results.has_next %}<a href="?page={{ results.next_page_number }}{% if query %}&q={{ query|urlencode }}{% endif %}">{% t "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="empty-state">
+    <span class="empty-state-icon"><i data-lucide="users-round"></i></span>
+    <h3>{% if query %}{% t "No workers match your search" %}{% else %}{% t "No worker profiles yet" %}{% endif %}</h3>
+    <p>{% t "Try another skill or location, or check back once more workers join." %}</p>
+    {% if query %}<a class="button button-secondary" href="{% url 'employers:workers' %}">{% t "Clear search" %}</a>{% endif %}
+  </div>
+{% endif %}
+{% endblock %}

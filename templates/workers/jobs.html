@@ -1,0 +1,89 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Recommended Jobs" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Recommended Jobs" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "A good fit for your skills" %}</span>
+    <h2>{% t "Recommended jobs" %}</h2>
+    <p>{% t "Explore opportunities matched to your experience and preferences." %}</p>
+  </div>
+  <span class="recommend-count"><i data-lucide="briefcase-business"></i>{{ total }} {% t "opportunities" %}</span>
+</div>
+
+<section class="jobs-photo-banner">
+  <img src="{% static 'images/plumber-at-work.webp' %}" loading="lazy" decoding="async" alt="A professional plumber installing pipes at a local job site">
+  <div>
+    <span>{% t "YOUR SKILLS ARE IN DEMAND" %}</span>
+    <strong>{% t "Find work that fits your life." %}</strong>
+    <small>{% t "Explore local opportunities and take your next step." %}</small>
+  </div>
+</section>
+
+<form class="job-search-panel" method="get" data-auto-submit-filters>
+  <label class="search-field"><i data-lucide="search"></i>
+    <input type="search" name="q" value="{{ filters.q }}" placeholder="{% t 'Job title, company, or skill' %}" aria-label="{% t 'Search job listings' %}">
+  </label>
+  <label class="search-field"><i data-lucide="map-pin"></i>
+    <input type="text" name="location" value="{{ filters.location }}" placeholder="{% t 'Location' %}" aria-label="{% t 'Filter by location' %}">
+  </label>
+  <label>
+    <span class="sr-only">{% t "Job type" %}</span>
+    <select name="job_type" aria-label="{% t 'Job type' %}">
+      <option value="">{% t "All job types" %}</option>
+      {% for value, label in job_types %}
+        <option value="{{ value }}" {% if filters.job_type == value %}selected{% endif %}>{{ label|tr }}</option>
+      {% endfor %}
+    </select>
+  </label>
+  <label class="salary-filter">
+    <span>{% t "Min. monthly salary" %}</span>
+    <select name="min_salary" aria-label="{% t 'Minimum monthly salary' %}">
+      <option value="">{% t "Any" %}</option>
+      <option value="10000" {% if filters.min_salary == '10000' %}selected{% endif %}>₹10,000+</option>
+      <option value="15000" {% if filters.min_salary == '15000' %}selected{% endif %}>₹15,000+</option>
+      <option value="20000" {% if filters.min_salary == '20000' %}selected{% endif %}>₹20,000+</option>
+    </select>
+  </label>
+  <button class="button button-secondary" type="submit">{% t "Search" %}</button>
+</form>
+
+<div class="job-results-heading">
+  <span><i data-lucide="sliders-horizontal"></i> {% t "Sorted by match score" %}</span>
+  <span>{{ total }} {% t "results" %}</span>
+</div>
+
+{% if results %}
+  <div class="recommend-job-grid">
+    {% for item in results %}
+      <div class="job-result-wrap">
+        <form method="post" action="{% url 'workers:save_job' item.job.id %}">
+          {% csrf_token %}
+          <input type="hidden" name="next" value="{{ request.get_full_path }}">
+          <button class="save-job{% if item.saved %} is-saved{% endif %}" type="submit">
+            <i data-lucide="bookmark"></i>{% if item.saved %}{% t "Saved" %}{% else %}{% t "Save job" %}{% endif %}
+          </button>
+        </form>
+        {% include 'partials/job_card.html' with job=item.job match=item.match applied=item.applied %}
+      </div>
+    {% endfor %}
+  </div>
+  {% if results.has_other_pages %}
+    <nav class="ks-pagination" aria-label="{% t 'Pagination' %}">
+      {% if results.has_previous %}<a href="?page={{ results.previous_page_number }}{% if filter_query %}&{{ filter_query }}{% endif %}">{% t "Previous" %}</a>{% endif %}
+      <span class="is-current">{{ results.number }} / {{ results.paginator.num_pages }}</span>
+      {% if results.has_next %}<a href="?page={{ results.next_page_number }}{% if filter_query %}&{{ filter_query }}{% endif %}">{% t "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="empty-state">
+    <span class="empty-state-icon"><i data-lucide="search"></i></span>
+    <h3>{% t "No jobs match those filters" %}</h3>
+    <p>{% t "Try a different skill or location to see more opportunities." %}</p>
+    <a class="button button-secondary" href="{% url 'workers:jobs' %}">{% t "Clear filters" %}</a>
+  </div>
+{% endif %}
+{% endblock %}

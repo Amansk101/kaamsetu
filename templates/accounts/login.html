@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Login" %} — KaamSetu{% endblock %}
+
+{% block content %}
+{% if mode == 'choose' %}
+<main class="auth-page auth-page-split">
+  <section class="auth-card">
+    <img class="auth-brand" src="{% static 'images/kaamsetu-brand-logo.png' %}" alt="KaamSetu — Connecting Skills. Creating Opportunities.">
+    <span class="eyebrow">{% t "Welcome back" %}</span>
+    <h1>{% t "Choose your login" %}</h1>
+    <p class="auth-intro">{% t "Select the account type you registered with." %}</p>
+    <div class="auth-form">
+      <a class="button auth-submit" href="{% url 'accounts:login' %}?role=worker">{% t "Worker login" %}</a>
+      <a class="button button-secondary auth-submit" href="{% url 'accounts:login' %}?role=employer">{% t "Employer login" %}</a>
+    </div>
+    <p class="auth-switch"><a href="{% url 'core:select_role' %}">{% t "Back to account types" %}</a></p>
+  </section>
+  <aside class="auth-visual"><img src="{% static 'images/skilled-trades-team.webp' %}" alt="Skilled Indian workers collaborating on a job site"><div><span>KAAMSETU</span><strong>Good work starts with the right connection.</strong><small>Skills, opportunities and trusted employers in one place.</small></div></aside>
+</main>
+{% else %}
+<main class="auth-page auth-page-split">
+  <section class="auth-card">
+    <img class="auth-brand" src="{% static 'images/kaamsetu-brand-logo.png' %}" alt="KaamSetu — Connecting Skills. Creating Opportunities.">
+    <span class="eyebrow">{% if role == 'worker' %}{% t "Worker account" %}{% else %}{% t "Employer account" %}{% endif %}</span>
+    <h1>Welcome Back!</h1>
+    <p class="auth-intro">{% t "Continue to your work and opportunities." %}</p>
+
+    <form class="auth-form" method="post" novalidate data-auth-form>
+      {% csrf_token %}
+      <input type="hidden" name="role" value="{{ role }}">
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+      <label for="{{ form.email.id_for_label }}">{% t "Email address" %}
+        <span class="input-with-icon"><i data-lucide="mail"></i>{{ form.email }}</span>
+      </label>
+      {% for error in form.email.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <label for="{{ form.password.id_for_label }}">{% t "Password" %}
+        <span class="input-with-icon"><i data-lucide="lock-keyhole"></i>{{ form.password }}
+          <button class="reveal-password" type="button" data-reveal-password="{{ form.password.id_for_label }}" aria-label="{% t 'Show password' %}" aria-pressed="false">
+            <i data-lucide="eye" data-icon-show></i><i data-lucide="eye-off" class="ks-hidden" data-icon-hide></i>
+          </button>
+        </span>
+      </label>
+      {% for error in form.password.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <div class="auth-options">
+        <label class="checkbox-label" for="{{ form.remember_me.id_for_label }}">{{ form.remember_me }} {% t "Remember me" %}</label>
+        <a href="{% url 'accounts:password_reset' %}">{% t "Forgot password?" %}</a>
+      </div>
+
+      {% for error in form.non_field_errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <button class="button auth-submit" type="submit" data-submit-btn>
+        <span class="btn-label">{% t "Login" %}</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+    </form>
+
+    <p class="auth-switch">{% t "New to KaamSetu?" %}
+      <a href="{% url 'accounts:register' %}?role={{ role }}">{% if role == 'worker' %}{% t "Create a worker account" %}{% else %}{% t "Create an employer account" %}{% endif %}</a>
+    </p>
+    <p class="auth-switch"><a href="{% url 'accounts:login' %}">{% t "Choose a different account type" %}</a></p>
+  </section>
+  <aside class="auth-visual"><img src="{% if role == 'employer' %}{% static 'images/indian-employer-worker-connection.webp' %}{% else %}{% static 'images/skilled-trades-team.webp' %}{% endif %}" alt="{% if role == 'employer' %}An Indian employer greeting a skilled worker at a construction site{% else %}Skilled Indian workers at a construction site{% endif %}"><div><span>KAAMSETU</span><strong>{% if role == 'employer' %}Build a team you can trust.{% else %}Your skills can take you further.{% endif %}</strong><small>Connecting Skills. Creating Opportunities.</small></div></aside>
+</main>
+{% endif %}
+{% endblock %}

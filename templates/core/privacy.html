@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Privacy Policy" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main>
+  <section class="landing-section about-section">
+    <div class="section-copy">
+      <span class="eyebrow">{% t "Privacy Policy" %}</span>
+      <h2>{% t "Your data belongs to you" %}</h2>
+      <p>{% t "KaamSetu only shares your details when you allow it. We keep your information private, and you stay in control of who can see it." %}</p>
+    </div>
+  </section>
+
+  <section class="landing-section feature-section">
+    <div class="feature-grid">
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="lock"></i></span>
+        <h3>{% t "Consent first" %}</h3>
+        <p>{% t "Employers cannot see your personal details until you give your consent." %}</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="shield-check"></i></span>
+        <h3>{% t "Fraud protection" %}</h3>
+        <p>{% t "Every job listing is reviewed so suspicious posts can be blocked quickly." %}</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="scale"></i></span>
+        <h3>{% t "Fair matching" %}</h3>
+        <p>{% t "Names and photos are kept out of matching, so skills are what count." %}</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="database"></i></span>
+        <h3>{% t "Data you can control" %}</h3>
+        <p>{% t "You choose your profile visibility and can update or remove your details at any time." %}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="landing-cta">
+    <div>
+      <span class="eyebrow">{% t "Ready to begin?" %}</span>
+      <h2>{% t "Join with confidence." %}</h2>
+      <p>{% t "Create your account and keep control of your information." %}</p>
+    </div>
+    <a class="button" href="{% url 'core:select_role' %}">{% t "Get Started" %} <i data-lucide="arrow-right"></i></a>
+  </section>
+</main>
+{% endblock %}

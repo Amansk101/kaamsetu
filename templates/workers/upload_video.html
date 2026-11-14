@@ -1,0 +1,113 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Upload Skills" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Upload Skills" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Let your work speak" %}</span>
+    <h2>{% t "Upload a skills video" %}</h2>
+    <p>{% t "A short demonstration helps employers understand your practical experience." %}</p>
+  </div>
+  <span class="secure-label"><i data-lucide="circle-check"></i> {% t "Your video stays private until you choose to share it." %}</span>
+</div>
+
+{% if not ai_enabled %}
+  <section class="dashboard-panel">
+    <p class="ks-muted"><i data-lucide="triangle-alert"></i> {% t "AI video analysis is OFF — your video will not be analysed by a model yet. Add KAAMSETU_GEMINI_API_KEY to your .env and restart the server to turn on real, live skill extraction." %}</p>
+  </section>
+{% endif %}
+
+<form class="video-content-grid" method="post" enctype="multipart/form-data" novalidate data-skill-video-form>
+  {% csrf_token %}
+  <section class="video-upload-panel">
+    <div class="dropzone" data-dropzone>
+      <div data-video-empty>
+        <span class="upload-icon-large"><i data-lucide="upload"></i></span>
+        <h3>{% t "Drag and drop your video here" %}</h3>
+        <p>{% t "or choose a file from your device" %}</p>
+        <label class="button button-secondary file-choose">
+          {% t "Choose a file" %}
+          {{ form.video }}
+        </label>
+        <small>{% t "MP4, MOV, WebM, MKV, AVI, M4V, 3GP or OGV · up to 100 MB" %}</small>
+        {% if form.video.errors %}<p class="field-error">{{ form.video.errors|join:", " }}</p>{% endif %}
+        <p class="field-error ks-hidden" role="alert" data-video-client-error></p>
+      </div>
+      <div class="selected-video ks-hidden" data-video-file>
+        <div class="video-file-title">
+          <i data-lucide="file-video-2"></i>
+          <div>
+            <strong data-video-name>{% t "Selected video" %}</strong>
+            <small data-video-size></small>
+          </div>
+          <button type="button" class="remove-file" data-video-remove aria-label="{% t 'Remove selected video' %}"><i data-lucide="x"></i></button>
+        </div>
+        <video data-video-preview controls playsinline></video>
+        <p class="video-file-note ks-hidden" data-video-note><i data-lucide="file-check"></i> {% t "Preview is available for video files only. Your file will still be uploaded." %}</p>
+        <button type="submit" class="button upload-start" data-upload-submit>{% t "Upload video and assess skills" %} <i data-lucide="upload"></i></button>
+      </div>
+    </div>
+
+    <div class="video-help">
+      <h3><i data-lucide="clapperboard"></i> {% t "Tips for a useful video" %}</h3>
+      <ul>
+        <li>{% t "Show the skill in action in a well-lit space." %}</li>
+        <li>{% t "Keep the camera steady and the video short." %}</li>
+        <li>{% t "Choose a task that represents your best work." %}</li>
+      </ul>
+    </div>
+
+    <button class="button is-disabled" type="submit" data-analyze-next aria-disabled="true">{% t "Analyze My Skills" %} <i data-lucide="arrow-right"></i></button>
+  </section>
+
+  <aside class="video-examples">
+    <div class="skills-photo-banner">
+      <img src="{% static 'images/electrician-at-work.webp' %}" alt="An electrician demonstrating safe practical work for a skill assessment" loading="lazy" decoding="async">
+      <div><span>{% t "REAL WORK, CLEARLY SHOWN" %}</span><strong>{% t "Let your skills speak for themselves." %}</strong></div>
+    </div>
+    <h3>{% t "Make your video easy to assess" %}</h3>
+    <ul>
+      <li>{% t "Show one real task from your trade from start to finish." %}</li>
+      <li>{% t "Keep the camera steady and the work area well lit." %}</li>
+      <li>{% t "Include only work you are comfortable sharing with the AI assessor." %}</li>
+    </ul>
+    <p class="ks-muted">{% t "Examples: electrical repair, pipe fitting, equipment maintenance or another practical task." %}</p>
+  </aside>
+</form>
+
+{% if assessments %}
+<section class="dashboard-panel">
+  <div class="panel-heading">
+    <div><span class="eyebrow">{% t "Upload history" %}</span><h2>{% t "Recent videos" %}</h2></div>
+  </div>
+  {% for item in assessments %}
+    <article class="notification-item">
+      <span class="notification-dot{% if item.status == 'completed' %} green{% endif %}"></span>
+      <div>
+        <strong>{% if item.detected_profession %}{{ item.detected_profession }}{% else %}{% t "Skill video" %}{% endif %}</strong>
+        <p>{% t "Stored securely as" %} {{ item.video.name }}</p>
+        <small>{{ item.created_at|date:"d M Y" }}
+          · {% if item.is_ai %}{% t "AI analysis" %}{% else %}{% t "Rule-based" %}{% endif %}
+          {% if item.ai_report.overall %} · {{ item.ai_report.overall }}/100{% endif %}
+          · {{ item.detected_skills.count }} {% t "skills found" %}
+        </small>
+      </div>
+      <div class="video-history-actions">
+        <a class="call-link" href="{% url 'workers:assessment_detail' item.id %}"><i data-lucide="scan-search"></i>{% t "View report" %}</a>
+        <form method="post" action="{% url 'workers:delete_video' item.id %}"
+              onsubmit='return confirm("{% t "Delete this video?" %}")'>
+          {% csrf_token %}
+          <button type="submit" class="skill-delete-button"
+                  title="{% t 'Delete video' %}" aria-label="{% t 'Delete video' %}">
+            <i data-lucide="trash-2"></i>
+          </button>
+        </form>
+      </div>
+    </article>
+  {% endfor %}
+</section>
+{% endif %}
+{% endblock %}

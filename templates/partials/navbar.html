@@ -1,0 +1,39 @@
+{% load static ks_i18n %}
+<header class="site-navbar">
+  <a class="brand" href="{% url 'core:landing' %}" aria-label="KaamSetu home">
+    <img src="{% static 'images/kaamsetu-brand-logo.png' %}" alt="KaamSetu — Connecting Skills. Creating Opportunities.">
+  </a>
+  <button class="mobile-menu-toggle" type="button" aria-label="{% t 'Open menu' %}" data-open-label="{% t 'Open menu' %}" data-close-label="{% t 'Close menu' %}" aria-expanded="false" aria-controls="site-navigation" data-menu-toggle>
+    <span aria-hidden="true">&#9776;</span>
+  </button>
+  <nav class="site-nav-links" id="site-navigation" aria-label="Main navigation" data-menu>
+    <a href="{% url 'core:landing' %}"{% if request.resolver_match.url_name == 'landing' or request.resolver_match.url_name == 'home' %} class="active" aria-current="page"{% endif %}>{% t "Home" %}</a>
+    <a href="{% url 'core:landing' %}#about"{% if request.resolver_match.url_name == 'about' %} class="active" aria-current="page"{% endif %}>{% t "About" %}</a>
+    <a href="{% url 'core:landing' %}#how-it-works"{% if request.resolver_match.url_name == 'how_it_works' %} class="active" aria-current="page"{% endif %}>{% t "How It Works" %}</a>
+    <a href="{% url 'core:select_role' %}?role=worker"{% if request.resolver_match.url_name == 'select_role' and request.GET.role == 'worker' %} class="active" aria-current="page"{% endif %}>{% t "Find Work" %}</a>
+    <a href="{% url 'core:select_role' %}?role=employer"{% if request.resolver_match.url_name == 'select_role' and request.GET.role == 'employer' %} class="active" aria-current="page"{% endif %}>{% t "Hire Workers" %}</a>
+    <form class="language-picker" method="post" action="{% url 'core:set_language' %}">
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+      <label class="sr-only" for="nav-language">{% t "Language" %}</label>
+      <select id="nav-language" name="language" aria-label="{% t 'Language' %}" data-language-select>
+        {% for code, name in LANGUAGES %}
+          <option value="{{ code }}" {% if code == CURRENT_LANG %}selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+      </select>
+    </form>
+    {% if user.is_authenticated %}
+      {% if user.is_worker %}
+        <a class="nav-login" href="{% url 'workers:dashboard' %}">{% t "Dashboard" %}</a>
+      {% elif user.is_employer %}
+        <a class="nav-login" href="{% url 'employers:dashboard' %}">{% t "Dashboard" %}</a>
+      {% endif %}
+      <form method="post" action="{% url 'accounts:logout' %}" class="nav-logout-form">{% csrf_token %}
+        <button type="submit" class="nav-register nav-logout-btn">{% t "Logout" %}</button>
+      </form>
+    {% else %}
+      <a class="nav-login" href="{% url 'accounts:login' %}" data-auth-modal-trigger>{% t "Login" %}</a>
+      <a class="nav-register" href="{% url 'accounts:register' %}" data-auth-modal-trigger>{% t "Register" %}</a>
+    {% endif %}
+  </nav>
+</header>

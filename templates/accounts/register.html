@@ -1,0 +1,108 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Create your account" %} — KaamSetu{% endblock %}
+
+{% block content %}
+{% if mode == 'choose' %}
+<main class="auth-page auth-page-split">
+  <section class="auth-card">
+    <img class="auth-brand" src="{% static 'images/kaamsetu-brand-logo.png' %}" alt="KaamSetu — Connecting Skills. Creating Opportunities.">
+    <span class="eyebrow">{% t "Join KaamSetu" %}</span>
+    <h1>{% t "Choose your account type" %}</h1>
+    <p class="auth-intro">{% t "Worker and employer accounts have separate setup and dashboards." %}</p>
+    <div class="auth-form">
+      <a class="button auth-submit" href="{% url 'accounts:register' %}?role=worker"><i data-lucide="users-round"></i> {% t "Create worker account" %}</a>
+      <a class="button button-secondary auth-submit" href="{% url 'accounts:register' %}?role=employer"><i data-lucide="briefcase-business"></i> {% t "Create employer account" %}</a>
+    </div>
+    <p class="auth-switch"><a href="{% url 'core:select_role' %}">{% t "Back to account types" %}</a></p>
+  </section>
+  <aside class="auth-visual"><img src="{% static 'images/skilled-trades-team.webp' %}" alt="Skilled workers sharing experience at work"><div><span>KAAMSETU</span><strong>One profile. More ways to grow.</strong><small>Choose worker or employer to get started.</small></div></aside>
+</main>
+{% else %}
+<main class="auth-page auth-page-split">
+  <section class="auth-card register-card">
+    <img class="auth-brand" src="{% static 'images/kaamsetu-brand-logo.png' %}" alt="KaamSetu — Connecting Skills. Creating Opportunities.">
+    <span class="eyebrow">{% if role == 'worker' %}{% t "Worker account" %}{% else %}{% t "Employer account" %}{% endif %}</span>
+    <h1>Join KaamSetu Today</h1>
+    <p class="auth-intro">{% if role == 'worker' %}{% t "Build your profile and find work that fits your skills." %}{% else %}{% t "Set up your business account and find skilled workers." %}{% endif %}</p>
+
+    <form class="auth-form" method="post" novalidate data-auth-form data-password-form>
+      {% csrf_token %}
+      <input type="hidden" name="role" value="{{ role }}">
+
+      <label for="{{ form.full_name.id_for_label }}">{% t "Name" %}
+        <span class="input-with-icon"><i data-lucide="user-round"></i>{{ form.full_name }}</span>
+      </label>
+      {% for error in form.full_name.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <label for="{{ form.email.id_for_label }}">{% t "Email address" %}
+        <span class="input-with-icon"><i data-lucide="mail"></i>{{ form.email }}</span>
+      </label>
+      {% for error in form.email.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <label for="{{ form.mobile.id_for_label }}">{% t "Mobile number" %}
+        <span class="input-with-icon"><i data-lucide="phone"></i>{{ form.mobile }}</span>
+      </label>
+      {% if form.mobile.help_text %}<p class="field-help">{{ form.mobile.help_text }}</p>{% endif %}
+      {% for error in form.mobile.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      {% if role == 'employer' %}
+      <label for="{{ form.company_name.id_for_label }}">{% t "Business / organization name" %}
+        <span class="input-with-icon"><i data-lucide="briefcase-business"></i>{{ form.company_name }}</span>
+      </label>
+      {% for error in form.company_name.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+      {% endif %}
+
+      <div class="form-section-heading signup-profile-heading">
+        <span><i data-lucide="map-pin-house"></i></span>
+        <div><h3>{% t "Profile details" %}</h3><p>{% t "Add your location and date of birth. Age is calculated from your birth date." %}</p></div>
+      </div>
+      <div class="form-grid">
+        <label for="{{ form.date_of_birth.id_for_label }}">{% t "Date of birth" %} {{ form.date_of_birth }}{% if form.date_of_birth.errors %}<span class="field-error">{{ form.date_of_birth.errors|join:", " }}</span>{% endif %}</label>
+        <label for="{{ form.city.id_for_label }}">{% t "City / town / village" %} {{ form.city }}{% if form.city.errors %}<span class="field-error">{{ form.city.errors|join:", " }}</span>{% endif %}</label>
+        <label for="{{ form.state.id_for_label }}">{% t "State" %} {{ form.state }}{% if form.state.errors %}<span class="field-error">{{ form.state.errors|join:", " }}</span>{% endif %}</label>
+        <label for="{{ form.pincode.id_for_label }}">{% t "PIN code" %} {{ form.pincode }}{% if form.pincode.errors %}<span class="field-error">{{ form.pincode.errors|join:", " }}</span>{% endif %}</label>
+      </div>
+
+      <label for="{{ form.password.id_for_label }}">{% t "Password" %}
+        <span class="input-with-icon"><i data-lucide="lock-keyhole"></i>{{ form.password }}
+          <button class="reveal-password" type="button" data-reveal-password="{{ form.password.id_for_label }}" aria-label="{% t 'Show password' %}" aria-pressed="false">
+            <i data-lucide="eye" data-icon-show></i><i data-lucide="eye-off" class="ks-hidden" data-icon-hide></i>
+          </button>
+        </span>
+      </label>
+      {% for error in form.password.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <label for="{{ form.confirm_password.id_for_label }}">{% t "Confirm password" %}
+        <span class="input-with-icon"><i data-lucide="lock-keyhole"></i>{{ form.confirm_password }}
+          <button class="reveal-password" type="button" data-reveal-password="{{ form.confirm_password.id_for_label }}" aria-label="{% t 'Show password' %}" aria-pressed="false">
+            <i data-lucide="eye" data-icon-show></i><i data-lucide="eye-off" class="ks-hidden" data-icon-hide></i>
+          </button>
+        </span>
+      </label>
+      {% for error in form.confirm_password.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <label class="checkbox-label terms-check" for="{{ form.terms.id_for_label }}">
+        {{ form.terms }} {% t "I agree to the" %} <a href="{% url 'core:terms' %}">{% t "Terms and Conditions" %}</a> {% t "and" %}
+        <a href="{% url 'core:privacy' %}">{% t "Privacy Policy" %}</a>.
+      </label>
+      {% for error in form.terms.errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      {% for error in form.non_field_errors %}<p class="form-error" role="alert">{{ error }}</p>{% endfor %}
+
+      <button class="button auth-submit" type="submit" data-submit-btn>
+        <span class="btn-label">{% t "Create your account" %}</span>
+        <span class="btn-spinner" aria-hidden="true"></span>
+      </button>
+    </form>
+
+    <p class="auth-switch">{% t "Already registered?" %}
+      <a href="{% url 'accounts:login' %}?role={{ role }}">{% if role == 'worker' %}{% t "Worker login" %}{% else %}{% t "Employer login" %}{% endif %}</a>
+    </p>
+    <p class="auth-switch"><a href="{% url 'accounts:register' %}">{% t "Choose a different account type" %}</a></p>
+  </section>
+  <aside class="auth-visual"><img src="{% if role == 'employer' %}{% static 'images/indian-employer-worker-connection.webp' %}{% else %}{% static 'images/skilled-trades-team.webp' %}{% endif %}" alt="{% if role == 'employer' %}An Indian employer greeting a skilled worker at a construction site{% else %}Skilled Indian workers at a construction site{% endif %}"><div><span>KAAMSETU</span><strong>{% if role == 'employer' %}Meet the talent your business needs.{% else %}Show what you can do.{% endif %}</strong><small>Connecting Skills. Creating Opportunities.</small></div></aside>
+</main>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,111 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{{ worker.full_name }} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Worker profile" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Candidate details" %}</span>
+    <h2>{{ worker.full_name }}</h2>
+    <p>{% if worker.location_display %}{{ worker.location_display }}{% else %}{% t "Location not specified" %}{% endif %}</p>
+  </div>
+  <a class="button button-secondary" href="{% url 'employers:workers' %}"><i data-lucide="arrow-left"></i>{% t "Back to workers" %}</a>
+</div>
+
+<div class="worker-detail-grid">
+  <section class="dashboard-panel">
+    <div class="worker-detail-head">
+      <div class="worker-avatar large">
+        {% if worker.photo %}<img src="{{ worker.photo.url }}" alt="{{ worker.full_name }}">{% else %}<i data-lucide="user-round"></i>{% endif %}
+      </div>
+      <div>
+        <h3>{{ worker.full_name }}</h3>
+        <p class="listing-meta-inline"><i data-lucide="map-pin"></i>{% if worker.location_display %}{{ worker.location_display }}{% else %}{% t "Location not specified" %}{% endif %}</p>
+        {% if match %}<span class="match-badge"><i data-lucide="sparkles"></i>{{ match }}% {% t "match" %}</span>{% endif %}
+      </div>
+    </div>
+
+    {% if worker.bio %}<p class="worker-bio">{{ worker.bio }}</p>{% endif %}
+    {% if consent and consent.share_video and shared_assessment and shared_assessment.video %}
+      <section class="shared-worker-video">
+        <h3>{% t "Shared skills video" %}</h3>
+        <video class="assessment-source-video" src="{{ shared_assessment.video.url }}" controls playsinline preload="metadata">{% t "Your browser does not support video playback." %}</video>
+      </section>
+    {% endif %}
+
+    {% if ai_skills %}
+      <div class="listing-skills">
+        <span class="meta-label">{% t "AI-verified skills (accepted by the worker)" %}</span>
+        <div class="employer-skill-list">
+          {% for item in ai_skills %}
+            <div class="employer-skill">
+              <div class="employer-skill-head">
+                <strong>{{ item.name }}</strong>
+                {% if item.is_assessable %}
+                  <span class="score-pill score-{{ item.level }}">{{ item.score }}<small>/100</small></span>
+                {% else %}
+                  <span class="score-pill score-unrated">—</span>
+                {% endif %}
+              </div>
+              <div class="employer-skill-meta">
+                {% if item.is_assessable %}<span class="level-pill level-{{ item.level }}">{{ item.level_label }}</span>{% endif %}
+                {% if item.confidence %}<span>{% t "Confidence" %} {% widthratio item.confidence 1 100 %}%</span>{% endif %}
+                <span><i data-lucide="calendar"></i>{{ item.created_at|date:"d M Y" }}</span>
+                <span class="evidence-badge evidence-{{ item.evidence_status }}">{{ item.get_evidence_status_display }}</span>
+              </div>
+              {% if item.reason %}<p class="ks-muted">{{ item.reason }}</p>{% endif %}
+            </div>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {% if skills %}
+      <div class="listing-skills">
+        <span class="meta-label">{% t "Skills" %}</span>
+        <div class="skill-tags">
+          {% for item in skills %}<span>{{ item.skill.name|tr }}{% if item.level %} · {{ item.get_level_display|tr }}{% endif %}</span>{% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    <dl class="detail-list">
+      <div><dt>{% t "Experience" %}</dt><dd>{% if worker.experience %}{{ worker.experience }}{% else %}{% t "Not specified" %}{% endif %}</dd></div>
+      <div><dt>{% t "Preferred job" %}</dt><dd>{% if worker.preferred_job %}{{ worker.preferred_job|tr }}{% else %}{% t "Not specified" %}{% endif %}</dd></div>
+      <div><dt>{% t "Availability" %}</dt><dd>{{ worker.get_availability_display|tr }}</dd></div>
+      <div><dt>{% t "Expected monthly salary" %}</dt><dd>{% if worker.expected_salary %}₹{{ worker.expected_salary }}{% else %}{% t "Not specified" %}{% endif %}</dd></div>
+      <div><dt>{% t "Education level" %}</dt><dd>{% if worker.education_level %}{{ worker.education_level }}{% else %}{% t "Not specified" %}{% endif %}</dd></div>
+      <div><dt>{% t "School / college" %}</dt><dd>{% if worker.school %}{{ worker.school }}{% else %}{% t "Not specified" %}{% endif %}</dd></div>
+      <div><dt>{% t "Qualification" %}</dt><dd>{% if worker.qualification %}{{ worker.qualification }}{% else %}{% t "Not specified" %}{% endif %}</dd></div>
+      <div><dt>{% t "Profile completion" %}</dt><dd>{{ worker.profile_completion }}%</dd></div>
+    </dl>
+  </section>
+
+  <aside class="dashboard-panel">
+    <div class="panel-heading">
+      <div><span class="eyebrow">{% t "Get in touch" %}</span><h2>{% t "Contact actions" %}</h2></div>
+      <i data-lucide="phone"></i>
+    </div>
+    {% if worker.mobile %}
+      <a class="button call-button" href="tel:{{ worker.mobile|urlencode }}"><i data-lucide="phone-call" aria-hidden="true"></i>{% t "Call" %} {{ worker.mobile }}</a>
+    {% endif %}
+
+    {% if worker.email or worker.user.email %}
+      <a class="button button-secondary call-button" target="_blank" rel="noopener noreferrer"
+         href="https://mail.google.com/mail/?view=cm&amp;fs=1&amp;to={{ worker.email|default:worker.user.email|urlencode }}">
+        <i data-lucide="mail" aria-hidden="true"></i>{% t "Send Email" %}
+      </a>
+      <a class="call-link" href="mailto:{{ worker.email|default:worker.user.email|urlencode }}">{% t "Open email app" %}</a>
+    {% else %}
+      <p class="ks-muted">{% t "No email address is available on this profile." %}</p>
+    {% endif %}
+
+    <div class="panel-heading worker-detail-subheading">
+      <div><span class="eyebrow">{% t "Ready to hire?" %}</span><h2>{% t "Post a matching job" %}</h2></div>
+    </div>
+    <a class="button button-secondary" href="{% url 'employers:post_job' %}">{% t "Post a Job" %} <i data-lucide="arrow-right"></i></a>
+  </aside>
+</div>
+{% endblock %}

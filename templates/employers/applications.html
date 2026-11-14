@@ -1,0 +1,95 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Applications" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Applications" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Review every applicant" %}</span>
+    <h2>{% t "Worker applications" %}</h2>
+    <p>{% t "Review applicants and manage their progress. Confirm a hire after the worker approves sharing their details." %}</p>
+  </div>
+  <span class="recommend-count"><i data-lucide="file-check-2"></i>{{ total }} {% t "applications" %}</span>
+</div>
+
+<section class="employer-photo-strip applications-photo-strip">
+  <img src="{% static 'images/indian-employer-worker-connection.webp' %}" loading="lazy" decoding="async" alt="An Indian employer greeting a skilled worker at a construction site">
+  <div><span>{% t "HIRING WITH CLARITY" %}</span><strong>{% t "Review every application in one place." %}</strong></div>
+</section>
+
+<div class="application-toolbar">
+  <form method="get" class="application-job-filter" data-auto-submit-filters>
+    <label for="application-job-filter">{% t "Filter by job" %}</label>
+    <select id="application-job-filter" name="job" data-auto-submit-select>
+      <option value="">{% t "All jobs" %}</option>
+      {% for job in filter_jobs %}<option value="{{ job.id }}" {% if selected_job.id == job.id %}selected{% endif %}>{{ job.title }}</option>{% endfor %}
+    </select>
+    {% if active_status != 'All' %}<input type="hidden" name="status" value="{{ active_status }}">{% endif %}
+  </form>
+  <div class="application-status-tabs">
+    <a class="{% if active_status == 'All' %}active{% endif %}" href="{% url 'employers:applications' %}{% if selected_job %}?job={{ selected_job.id }}{% endif %}">{% t "All" %} <span>{{ all_count }}</span></a>
+    {% for status in statuses %}
+      <a class="{% if active_status == status %}active{% endif %}" href="?status={{ status|urlencode }}{% if selected_job %}&job={{ selected_job.id }}{% endif %}">{{ status|tr }}</a>
+    {% endfor %}
+  </div>
+</div>
+
+{% if results %}
+  <section class="application-list">
+    {% for application in results %}
+      <article class="application-card employer-application-card">
+        <div class="company-avatar">{{ application.worker.full_name|slice:':1'|upper }}</div>
+        <div class="application-main">
+          <span class="application-company">{{ application.job.company_label }}</span>
+          <h3>{{ application.worker.full_name }} — {{ application.job.title|tr }}</h3>
+          <div class="application-meta">
+            <span><i data-lucide="map-pin"></i>{% if application.worker.location_display %}{{ application.worker.location_display }}{% else %}{% t "Location not specified" %}{% endif %}</span>
+            <span><i data-lucide="briefcase-business"></i>{% if application.worker.experience %}{{ application.worker.experience }}{% else %}{% t "Experience not specified" %}{% endif %}</span>
+            <span><i data-lucide="graduation-cap"></i>{% if application.worker.education_level %}{{ application.worker.education_level }}{% else %}{% t "Education not specified" %}{% endif %}</span>
+            <span><i data-lucide="calendar-days"></i>{% t "Applied" %} {{ application.created_at|date:"d M Y" }}</span>
+            {% if application.match_score %}<span><i data-lucide="sparkles"></i>{{ application.match_score }}% {% t "match" %}</span>{% endif %}
+          </div>
+          {% if application.worker.skills_text %}
+            <div class="listing-skills">
+              <span class="meta-label">{% t "Skills" %}</span>
+              <div class="skill-tags">{% for item in application.worker.skills.all %}<span>{{ item.skill.name|tr }}</span>{% endfor %}</div>
+            </div>
+          {% endif %}
+        </div>
+        <span class="application-status status-{{ application.status|slugify }}">{{ application.status|tr }}</span>
+        <div class="application-actions employer-application-actions">
+          <a href="{% url 'employers:worker_detail' application.worker.id %}">{% t "View worker" %}</a>
+          <form method="post" action="{% url 'employers:update_status' application.id %}" class="status-form">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.get_full_path }}">
+            <label class="sr-only" for="status-{{ application.id }}">{% t "Application status" %}</label>
+            <select id="status-{{ application.id }}" name="status">
+              {% for status in update_statuses %}
+                <option value="{{ status }}" {% if status == application.status %}selected{% endif %}>{{ status|tr }}</option>
+              {% endfor %}
+            </select>
+            <button class="button button-secondary" type="submit">{% t "Update" %}</button>
+          </form>
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+
+  {% if results.has_other_pages %}
+    <nav class="ks-pagination" aria-label="{% t 'Pagination' %}">
+      {% if results.has_previous %}<a href="?status={{ active_status|urlencode }}{% if selected_job %}&job={{ selected_job.id }}{% endif %}&page={{ results.previous_page_number }}">{% t "Previous" %}</a>{% endif %}
+      <span class="is-current">{{ results.number }} / {{ results.paginator.num_pages }}</span>
+      {% if results.has_next %}<a href="?status={{ active_status|urlencode }}{% if selected_job %}&job={{ selected_job.id }}{% endif %}&page={{ results.next_page_number }}">{% t "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="empty-state">
+    <span class="empty-state-icon"><i data-lucide="file-check-2"></i></span>
+    <h3>{% if total %}{% t "No applications in this status" %}{% else %}{% t "No applications yet" %}{% endif %}</h3>
+    <p>{% t "Once workers apply to your jobs, their details will appear here." %}</p>
+    <a class="button button-secondary" href="{% url 'employers:jobs' %}">{% t "Review my jobs" %}</a>
+  </div>
+{% endif %}
+{% endblock %}

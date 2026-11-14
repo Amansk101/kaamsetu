@@ -1,0 +1,12 @@
+# KaamSetu runtime dependencies
+# Install:  pip install -r requirements.txt
+Django>=6.1,<7
+gunicorn>=23,<24
+whitenoise>=6.9,<7
+dj-database-url>=2.3,<3
+psycopg[binary]>=3.2,<4
+django-storages[s3]>=1.14,<2
+
+# Timezone database for zoneinfo on platforms that do not ship one
+# (harmless on Windows/macOS; required on some Linux images).
+tzdata; platform_system == "Windows"

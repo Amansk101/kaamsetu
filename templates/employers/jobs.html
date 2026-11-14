@@ -1,0 +1,95 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "My Jobs" %} â€” KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "My Jobs" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro employer-jobs-intro">
+  <div>
+    <span class="eyebrow">{% t "Everything you have posted" %}</span>
+    <h2>{% t "My jobs" %}</h2>
+    <p>{% t "Manage your listings, review applicant progress and keep hiring moving." %}</p>
+  </div>
+  <a class="button" href="{% url 'employers:post_job' %}"><i data-lucide="plus"></i>{% t "Post New Job" %}</a>
+</div>
+
+<section class="employer-jobs-banner" aria-label="Employer job management">
+  <img src="{% static 'images/mechanic-at-work.webp' %}" alt="Mechanic demonstrating skilled work in a professional workshop" loading="lazy" decoding="async">
+  <div><span>{% t "YOUR OPEN ROLES, AT A GLANCE" %}</span><strong>{% t "Find the right people for every job." %}</strong></div>
+</section>
+
+<form method="get" class="employer-job-filters" data-auto-submit-filters>
+  <label class="search-field"><i data-lucide="search"></i><input type="search" name="q" value="{{ query }}" placeholder="{% t 'Search your jobs' %}" aria-label="{% t 'Search your jobs' %}"></label>
+  <label><span class="sr-only">{% t "Status" %}</span>
+    <select name="status" aria-label="{% t 'Filter jobs by status' %}">
+      <option value="">{% t "All statuses" %}</option>
+      {% for value, label in job_statuses %}<option value="{{ value }}" {% if active_status == value %}selected{% endif %}>{{ label|tr }}</option>{% endfor %}
+    </select>
+  </label>
+  <label><span class="sr-only">{% t "Sort jobs" %}</span>
+    <select name="sort" aria-label="{% t 'Sort jobs' %}">
+      <option value="newest" {% if sort == 'newest' %}selected{% endif %}>{% t "Newest first" %}</option>
+      <option value="oldest" {% if sort == 'oldest' %}selected{% endif %}>{% t "Oldest first" %}</option>
+      <option value="status" {% if sort == 'status' %}selected{% endif %}>{% t "Sort by status" %}</option>
+    </select>
+  </label>
+  <button class="button button-secondary" type="submit">{% t "Apply" %}</button>
+</form>
+
+<div class="employer-job-results-heading"><span>{{ total }} {% t "jobs" %}</span><span>{% t "Applications and candidate counts are updated from your records." %}</span></div>
+
+{% if results %}
+  <section class="employer-job-cards" aria-label="{% t 'Your job listings' %}">
+    {% for job in results %}
+      <article class="employer-job-card">
+        <div class="employer-job-card-top">
+          <div class="employer-job-mark" aria-hidden="true"><i data-lucide="briefcase-business"></i></div>
+          <div class="employer-job-title"><span>{{ job.company_label }}</span><h3>{{ job.title|tr }}</h3></div>
+          <span class="job-status-pill job-status-{{ job.status }}">{{ job.get_status_display|tr }}</span>
+        </div>
+        <p class="employer-job-description">{{ job.description|default:job.raw_description|truncatechars:210 }}</p>
+        <div class="employer-job-facts">
+          <span><i data-lucide="map-pin"></i>{{ job.location_label|default:"Location not specified" }}</span>
+          <span><i data-lucide="briefcase"></i>{{ job.get_job_type_display|tr }}</span>
+          <span><i data-lucide="indian-rupee"></i>{{ job.salary_label|default:"Salary not specified" }}</span>
+          <span><i data-lucide="users-round"></i>{{ job.workers_needed }} {% t "vacancies" %}</span>
+          <span><i data-lucide="calendar-days"></i>{% t "Posted" %} {{ job.created_at|date:"d M Y" }}</span>
+        </div>
+        {% if job.skills_list %}<div class="employer-job-skills"><span>{% t "Required skills" %}</span><div class="skill-tags">{% for skill in job.skills_list %}<span>{{ skill|tr }}</span>{% endfor %}</div></div>{% endif %}
+        <div class="employer-job-stats">
+          <div><strong>{{ job.applicant_count }}</strong><span>{% t "Applications" %}</span></div>
+          <div><strong>{{ job.pending_count }}</strong><span>{% t "Pending" %}</span></div>
+          <div><strong>{{ job.shortlisted_count }}</strong><span>{% t "Shortlisted" %}</span></div>
+        </div>
+        <div class="employer-job-card-actions">
+          <a class="button button-secondary" href="{% url 'employers:job_detail' job.id %}"><i data-lucide="eye"></i>{% t "View Details" %}</a>
+          <a class="button button-secondary" href="{% url 'employers:edit_job' job.id %}"><i data-lucide="pencil"></i>{% t "Edit" %}</a>
+          <a class="button button-secondary" href="{% url 'employers:applications' %}?job={{ job.id }}"><i data-lucide="file-check-2"></i>{% t "Applications" %}</a>
+          <a class="button button-secondary" href="{% url 'hiring:job_candidates' job.id %}"><i data-lucide="users-round"></i>{% t "Manage Candidates" %}</a>
+          {% if job.status != 'closed' %}
+            <form method="post" action="{% url 'employers:close_job' job.id %}" data-confirm="{% t 'Close this job? Workers will no longer see it as an active opportunity.' %}">
+              {% csrf_token %}<button class="button employer-close-job" type="submit"><i data-lucide="circle-x"></i>{% t "Close Job" %}</button>
+            </form>
+          {% endif %}
+        </div>
+      </article>
+    {% endfor %}
+  </section>
+
+  {% if results.has_other_pages %}
+    <nav class="ks-pagination" aria-label="{% t 'Job listing pages' %}">
+      {% if results.has_previous %}<a href="?q={{ query|urlencode }}&status={{ active_status|urlencode }}&sort={{ sort }}&page={{ results.previous_page_number }}">{% t "Previous" %}</a>{% endif %}
+      <span class="is-current">{{ results.number }} / {{ results.paginator.num_pages }}</span>
+      {% if results.has_next %}<a href="?q={{ query|urlencode }}&status={{ active_status|urlencode }}&sort={{ sort }}&page={{ results.next_page_number }}">{% t "Next" %}</a>{% endif %}
+    </nav>
+  {% endif %}
+{% else %}
+  <div class="empty-state employer-jobs-empty">
+    <span class="empty-state-icon"><i data-lucide="briefcase-business"></i></span>
+    <h3>{% if query or active_status %}{% t "No jobs match these filters" %}{% else %}{% t "No jobs posted yet" %}{% endif %}</h3>
+    <p>{% if query or active_status %}{% t "Try a different search or clear your filters." %}{% else %}{% t "Publish your first role and local workers can discover the opportunity." %}{% endif %}</p>
+    {% if query or active_status %}<a class="button button-secondary" href="{% url 'employers:jobs' %}">{% t "Clear filters" %}</a>{% else %}<a class="button" href="{% url 'employers:post_job' %}"><i data-lucide="plus"></i>{% t "Post New Job" %}</a>{% endif %}
+  </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KaamSetu — End-to-End Flow Prototype</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+<style>
+  :root {
+    --brand: #10b981;
+    --brand-2: #0ea5e9;
+    --ink: #0f172a;
+    --wa-head: #075e54;
+    --wa-bg: #e5ddd5;
+    --wa-out: #dcf8c6;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: #e2e8f0;
+    background: radial-gradient(1200px 700px at 15% -10%, #1e3a8a55, transparent 55%),
+                radial-gradient(1000px 700px at 100% 0%, #10b98133, transparent 50%),
+                linear-gradient(160deg, #070b16 0%, #0b1220 55%, #0a0f1c 100%);
+    min-height: 100vh;
+  }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 28px 18px 70px; }
+
+  .brand { display: flex; align-items: center; gap: 12px; }
+  .brand .logo {
+    width: 44px; height: 44px; border-radius: 13px;
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    display: grid; place-items: center; font-weight: 800; color: #04121a; font-size: 20px;
+    box-shadow: 0 8px 24px #10b98155;
+  }
+  .brand h1 { font-size: 22px; margin: 0; font-weight: 800; letter-spacing: .2px; }
+  .brand p { margin: 0; font-size: 12.5px; color: #94a3b8; }
+
+  .glass {
+    background: rgba(255,255,255,.055);
+    border: 1px solid rgba(255,255,255,.10);
+    border-radius: 20px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 18px 50px rgba(0,0,0,.35);
+  }
+
+  .stepper { display: flex; flex-wrap: wrap; gap: 10px; margin: 26px 0 20px; }
+  .stepper button {
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.04);
+    color: #cbd5e1; padding: 10px 14px; border-radius: 999px;
+    font-size: 13px; font-weight: 600; cursor: pointer; transition: .18s;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stepper button .n {
+    width: 20px; height: 20px; border-radius: 50%; font-size: 11px;
+    display: grid; place-items: center; background: rgba(255,255,255,.12); color: #cbd5e1;
+  }
+  .stepper button:hover { background: rgba(255,255,255,.09); }
+  .stepper button.active {
+    background: linear-gradient(135deg, var(--brand), var(--brand-2));
+    color: #04121a; border-color: transparent;
+    box-shadow: 0 10px 26px #10b98145;
+  }
+  .stepper button.active .n { background: #04121a22; color: #04121a; }
+
+  .stage-caption {
+    padding: 16px 18px; margin-bottom: 20px; border-left: 3px solid var(--brand);
+  }
+  .stage-caption h2 { font-size: 17px; margin: 0 0 4px; font-weight: 800; }
+  .stage-caption p { margin: 0; font-size: 13.5px; color: #a5b4c8; }
+
+  .grid { display: grid; grid-template-columns: 360px 1fr; gap: 26px; align-items: start; }
+  @media (max-width: 880px) { .grid { grid-template-columns: 1fr; } }
+
+  /* ---------- Phone / WhatsApp ---------- */
+  .phone {
+    width: 340px; max-width: 100%; margin: 0 auto;
+    background: #0b1410; border: 10px solid #141c2b; border-radius: 42px;
+    box-shadow: 0 30px 70px rgba(0,0,0,.55), inset 0 0 0 1px rgba(255,255,255,.05);
+    overflow: hidden; position: relative;
+  }
+  .notch {
+    position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+    width: 110px; height: 20px; background: #141c2b; border-radius: 0 0 14px 14px; z-index: 5;
+  }
+  .wa-head {
+    background: var(--wa-head); color: #fff; padding: 26px 14px 12px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .wa-head .av { width: 34px; height: 34px; border-radius: 50%; background: linear-gradient(135deg,var(--brand),var(--brand-2)); display:grid; place-items:center; font-weight:800; color:#04121a; font-size:14px;}
+  .wa-head .nm { font-size: 14px; font-weight: 700; line-height: 1.1; }
+  .wa-head .st { font-size: 11px; opacity: .75; }
+  .wa-body {
+    background: var(--wa-bg);
+    background-image: radial-gradient(rgba(0,0,0,.045) 1px, transparent 1px);
+    background-size: 16px 16px;
+    padding: 14px 12px 18px; min-height: 430px;
+    display: flex; flex-direction: column; gap: 9px;
+  }
+  .msg { max-width: 82%; padding: 8px 11px; border-radius: 12px; font-size: 12.8px; color: #14211a; box-shadow: 0 1px 1px rgba(0,0,0,.12); position: relative; animation: pop .25s ease both; }
+  .msg.in { background: #fff; align-self: flex-start; border-top-left-radius: 4px; }
+  .msg.out { background: var(--wa-out); align-self: flex-end; border-top-right-radius: 4px; }
+  .msg .t { display: block; font-size: 9.5px; color: #6b7a72; text-align: right; margin-top: 3px; }
+  @keyframes pop { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+  .quick { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
+  .quick span {
+    font-size: 11.5px; padding: 5px 10px; border-radius: 999px;
+    background: #fff; color: #0b7a5a; border: 1px solid #0b7a5a55; font-weight: 600;
+  }
+  .voice { display: flex; align-items: center; gap: 8px; }
+  .wave { display: flex; align-items: center; gap: 2px; height: 16px; }
+  .wave i { width: 2.5px; background: #0b7a5a; border-radius: 2px; display: block; animation: wv 1s infinite ease-in-out; }
+  .wave i:nth-child(2){ animation-delay:.1s } .wave i:nth-child(3){ animation-delay:.2s }
+  .wave i:nth-child(4){ animation-delay:.3s } .wave i:nth-child(5){ animation-delay:.4s }
+  .wave i:nth-child(6){ animation-delay:.15s } .wave i:nth-child(7){ animation-delay:.25s }
+  @keyframes wv { 0%,100%{height:5px} 50%{height:16px} }
+
+  .ai-card {
+    align-self: flex-start; max-width: 92%; background: #0f1b2e; color: #e2e8f0;
+    border: 1px solid #10b98155; border-radius: 14px; padding: 11px 12px; font-size: 12.3px;
+  }
+  .ai-card .hd { font-size: 10.5px; text-transform: uppercase; letter-spacing: .6px; color: #34d399; font-weight: 800; margin-bottom: 6px; }
+  .lvl { display:inline-block; padding: 3px 9px; border-radius: 999px; font-size: 11.5px; font-weight: 800; }
+  .lvl.working { background: #f59e0b22; color: #fbbf24; border:1px solid #f59e0b55;}
+  .lvl.skilled { background: #10b98122; color: #34d399; border:1px solid #10b98155;}
+  .bar { height: 6px; border-radius: 999px; background: #ffffff14; margin-top: 8px; overflow: hidden; }
+  .bar > span { display:block; height:100%; background: linear-gradient(90deg,var(--brand),var(--brand-2)); }
+  .toggle-row { display:flex; align-items:center; justify-content:space-between; padding: 6px 0; border-bottom: 1px dashed #ffffff1f; font-size: 12.3px; }
+  .sw { width: 34px; height: 19px; border-radius: 999px; background: #10b981; position: relative; flex: none; }
+  .sw::after { content:""; position:absolute; top:2px; left:17px; width:15px; height:15px; border-radius:50%; background:#04121a; }
+  .sw.off { background:#64748b55; } .sw.off::after { left:2px; background:#94a3b8; }
+
+  /* ---------- Employer dashboard ---------- */
+  .browser { overflow: hidden; }
+  .browser .bar-top {
+    display:flex; align-items:center; gap:8px; padding: 11px 14px;
+    background: rgba(255,255,255,.06); border-bottom: 1px solid rgba(255,255,255,.08);
+  }
+  .dot { width: 11px; height: 11px; border-radius: 50%; }
+  .url { margin-left: 10px; font-size: 12px; color: #94a3b8; background: rgba(0,0,0,.25); padding: 4px 12px; border-radius: 8px; }
+  .dash { display: grid; grid-template-columns: 190px 1fr; min-height: 430px; }
+  @media (max-width: 620px){ .dash { grid-template-columns: 1fr; } .dash .side{ display:none; } }
+  .side { padding: 16px 12px; border-right: 1px solid rgba(255,255,255,.07); }
+  .side .item { font-size: 13px; color: #a5b4c8; padding: 9px 11px; border-radius: 10px; margin-bottom: 3px; }
+  .side .item.on { background: rgba(16,185,129,.15); color: #6ee7b7; font-weight: 700; }
+  .panel { padding: 18px; }
+  .panel h3 { font-size: 15px; font-weight: 800; margin: 0 0 3px; }
+  .panel .sub { font-size: 12.5px; color: #94a3b8; margin-bottom: 14px; }
+
+  .tile { background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.09); border-radius: 14px; padding: 14px; }
+  .stat { font-size: 24px; font-weight: 800; }
+  .stat-l { font-size: 11.5px; color: #94a3b8; }
+  .badge-ok { background: #10b98122; color:#34d399; border:1px solid #10b98155; padding: 3px 9px; border-radius:999px; font-size: 11px; font-weight:700;}
+  .badge-warn { background: #f59e0b22; color:#fbbf24; border:1px solid #f59e0b55; padding: 3px 9px; border-radius:999px; font-size: 11px; font-weight:700;}
+  .badge-info { background: #0ea5e922; color:#38bdf8; border:1px solid #0ea5e955; padding: 3px 9px; border-radius:999px; font-size: 11px; font-weight:700;}
+
+  .cand { display:flex; gap: 12px; align-items: flex-start; padding: 12px; border-radius: 14px; background: rgba(255,255,255,.04); border:1px solid rgba(255,255,255,.08); margin-bottom: 10px;}
+  .cand .av { width: 42px; height: 42px; border-radius: 12px; background: linear-gradient(135deg,var(--brand),var(--brand-2)); display:grid; place-items:center; font-weight:800; color:#04121a; flex:none;}
+  .locked { filter: blur(5px); opacity: .55; user-select: none; }
+  .match { font-size: 11.5px; font-weight: 800; color: #34d399; }
+
+  .timeline { position: relative; padding-left: 22px; }
+  .timeline::before { content:""; position:absolute; left:6px; top:4px; bottom:4px; width:2px; background: rgba(255,255,255,.12); }
+  .tl { position: relative; margin-bottom: 16px; }
+  .tl::before { content:""; position:absolute; left:-22px; top:3px; width:12px; height:12px; border-radius:50%; background: var(--brand); box-shadow: 0 0 0 4px #10b98122; }
+  .tl.pending::before { background:#64748b; box-shadow: 0 0 0 4px #64748b22; }
+  .tl .d { font-size: 12.5px; font-weight: 700; }
+  .tl .m { font-size: 11.5px; color: #94a3b8; }
+
+  .hidden { display: none !important; }
+  .foot { text-align:center; font-size: 12px; color:#64748b; margin-top: 30px; }
+  .legend { font-size: 12px; color:#94a3b8; display:flex; gap:16px; flex-wrap:wrap; margin-top:12px;}
+  .legend b { color:#cbd5e1; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="brand">
+    <div class="logo">K</div>
+    <div>
+      <h1>KaamSetu</h1>
+      <p>WhatsApp-first hiring · AI skill verification · Consent-gated connections · Follow-up retention</p>
+    </div>
+  </div>
+
+  <div class="stepper" id="stepper">
+    <button data-step="0" class="active"><span class="n">1</span> Onboarding</button>
+    <button data-step="1"><span class="n">2</span> AI Verification &amp; Assessment</button>
+    <button data-step="2"><span class="n">3</span> AI Matching</button>
+    <button data-step="3"><span class="n">4</span> Consent Gate</button>
+    <button data-step="4"><span class="n">5</span> Follow-up</button>
+  </div>
+
+  <div class="glass stage-caption" id="caption"></div>
+
+  <div class="grid">
+
+    <!-- ================= WORKER (WhatsApp) ================= -->
+    <div>
+      <div class="phone">
+        <div class="notch"></div>
+        <div class="wa-head">
+          <div class="av">K</div>
+          <div>
+            <div class="nm">KaamSetu</div>
+            <div class="st">online · aapki bhasha me</div>
+          </div>
+        </div>
+        <div class="wa-body" id="waBody"><!-- injected --></div>
+      </div>
+      <div class="legend">
+        <span><b>Worker:</b> Ravi · Plumber · Dhanbad</span>
+      </div>
+    </div>
+
+    <!-- ================= EMPLOYER (Dashboard) ================= -->
+    <div>
+      <div class="glass browser">
+        <div class="bar-top">
+          <span class="dot" style="background:#ef4444"></span>
+          <span class="dot" style="background:#f59e0b"></span>
+          <span class="dot" style="background:#22c55e"></span>
+          <span class="url" id="url">app.kaamsetu.in/employer</span>
+        </div>
+        <div class="dash">
+          <div class="side">
+            <div class="item on">Dashboard</div>
+            <div class="item">Post a Job</div>
+            <div class="item">Candidates</div>
+            <div class="item">Hires</div>
+            <div class="item">Follow-ups</div>
+          </div>
+          <div class="panel" id="empPanel"><!-- injected --></div>
+        </div>
+      </div>
+      <div class="legend">
+        <span><b>Employer:</b> Meena · Sharma Traders</span>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="foot">Prototype only — static mock. Backend (Django + Postgres) isko drive karega; AI agents aur WhatsApp Cloud API integration layer ke peeche rahenge.</div>
+</div>
+
+<script>
+const STEPS = [
+  {
+    caption: ["1 · Onboarding (Shuruaat)",
+      "Worker Ravi WhatsApp par register karta hai — voice note ya text me. Koi app download nahi. Employer Meena web dashboard / WhatsApp se job post karti hai."],
+    url: "app.kaamsetu.in/employer/onboarding",
+    wa: `
+      <div class="msg in">Namaste! KaamSetu me aapka swagat hai. Aapka naam kya hai?<span class="t">10:02</span></div>
+      <div class="msg out">Ravi Kumar<span class="t">10:02 ✓✓</span></div>
+      <div class="msg in">Ravi ji, aap kaunsa kaam karte hain? Neeche se chunein ya voice note bhejein.<span class="t">10:02</span>
+        <div class="quick"><span>Plumber</span><span>Electrician</span><span>Painter</span><span>Driver</span></div>
+      </div>
+      <div class="msg out"><div class="voice"><b>▶</b><div class="wave"><i style="height:6px"></i><i style="height:12px"></i><i style="height:16px"></i><i style="height:9px"></i><i style="height:14px"></i><i style="height:7px"></i><i style="height:11px"></i></div><span style="font-size:11px">0:08</span></div><span class="t">10:03 ✓✓</span></div>
+      <div class="msg in">Samajh gaya — <b>Plumber</b>. Aap kahan rehte hain?<span class="t">10:03</span></div>
+      <div class="msg out">Dhaiya, Dhanbad 828106<span class="t">10:04 ✓✓</span></div>
+      <div class="msg in">Perfect! Ab agla step: apna hunar video me dikhaiye 📹<span class="t">10:04</span></div>
+    `,
+    emp: `
+      <h3>Business Setup</h3>
+      <div class="sub">Text / voice se apna kaam aur requirement bataiye.</div>
+      <div class="row g-2">
+        <div class="col-6"><div class="tile"><div class="stat-l">Business</div><div class="stat" style="font-size:16px">Sharma Traders</div></div></div>
+        <div class="col-6"><div class="tile"><div class="stat-l">Type</div><div class="stat" style="font-size:16px">Retail / Hardware</div></div></div>
+      </div>
+      <div class="tile mt-2">
+        <div class="stat-l mb-1">Job post (voice / text)</div>
+        <div style="font-size:13px">"Mujhe 2 plumber chahiye, 800–1000 rupaye per din, Dhanbad ke paas. Turant join kare."</div>
+        <div class="mt-2"><span class="badge-info">Role: Plumber</span> <span class="badge-info">₹800–1000/day</span> <span class="badge-info">Dhanbad</span></div>
+      </div>
+    `
+  },
+  {
+    caption: ["2 · AI Verification & Assessment (Core Innovation)",
+      "Ravi 30–60 sec ka skill video bhejta hai → Skill Assessment Agent use rate karta hai. Meena ki job Listing Verification Agent se fraud-check hoti hai (jaise upfront paisa maangna)."],
+    url: "app.kaamsetu.in/employer/post-job",
+    wa: `
+      <div class="msg in">Video bhejein (30–60 sec) jisme aapka kaam dikhe 📹<span class="t">10:05</span></div>
+      <div class="msg out">📹 plumber_source_repair.mp4 (0:41)<span class="t">10:07 ✓✓</span></div>
+      <div class="msg in">Video mil gayi. AI check kar raha hai… ⏳<span class="t">10:07</span></div>
+      <div class="ai-card">
+        <div class="hd">Skill Assessment Result</div>
+        <div>Skill: <b>Plumbing</b> &nbsp; <span class="lvl working">Working level</span></div>
+        <div class="bar"><span style="width:82%"></span></div>
+        <div class="mt-1" style="font-size:11.5px;color:#94a3b8">AI confidence 82% · techniques: pipe fitting, leakage sealing</div>
+      </div>
+      <div class="msg in">Shabaash Ravi ji! Aapka skill <b>Working</b> level pe verify ho gaya ✅<span class="t">10:08</span></div>
+    `,
+    emp: `
+      <h3>Listing Verification</h3>
+      <div class="sub">Job approve hone se pehle AI isko check karta hai.</div>
+      <div class="tile">
+        <div class="d-flex justify-content-between"><b>Plumber required · ₹800–1000/day</b><span class="badge-ok">PASSED</span></div>
+        <div class="mt-2" style="font-size:12.5px">
+          ✅ No upfront payment asked<br>
+          ✅ Salary range realistic for area<br>
+          ✅ Contact details valid<br>
+          ✅ Language: no scam patterns
+        </div>
+        <div class="bar mt-3"><span style="width:92%"></span></div>
+        <div style="font-size:11.5px;color:#94a3b8;margin-top:6px">Trust score 92/100 · auto-approved</div>
+      </div>
+      <div class="tile mt-2" style="border-color:#f59e0b55">
+        <div class="d-flex justify-content-between"><b>Example flagged job</b><span class="badge-warn">NEEDS REVIEW</span></div>
+        <div class="mt-2" style="font-size:12.5px;color:#fbbf24">⚠ "₹500 registration fee pehle do" detected → auto-blocked, employer ko warn</div>
+      </div>
+    `
+  },
+  {
+    caption: ["3 · AI Matching (Jahan Jadoo Hota Hai)",
+      "Matching Agent worker ki skill + location (distance) + employer requirement ko mila ke top jobs dhoondhta hai. Ravi ko sirf best-fit jobs dikhengi."],
+    url: "app.kaamsetu.in/employer/matches",
+    wa: `
+      <div class="msg in">Ravi ji, aapke liye <b>2 nayi jobs</b> mili hain 👇<span class="t">10:15</span></div>
+      <div class="ai-card">
+        <div class="hd">90% Match</div>
+        <div><b>Plumber</b> · Sharma Traders</div>
+        <div style="font-size:11.5px;color:#94a3b8">₹900/day · 3.2 km · Dhanbad · Full-time</div>
+        <div class="bar"><span style="width:90%"></span></div>
+      </div>
+      <div class="ai-card">
+        <div class="hd">74% Match</div>
+        <div><b>Plumber helper</b> · Verma Constructions</div>
+        <div style="font-size:11.5px;color:#94a3b8">₹700/day · 6.8 km · Full-time</div>
+        <div class="bar"><span style="width:74%"></span></div>
+      </div>
+    `,
+    emp: `
+      <h3>Matched Workers</h3>
+      <div class="sub">Tumhari requirement se sabse fit workers — abhi locked 🔒 (consent ke bina kuch visible nahi).</div>
+      <div class="cand">
+        <div class="av locked">RK</div>
+        <div class="locked" style="flex:1">
+          <div><b>Worker #A1</b> · <span class="match">90% match</span></div>
+          <div style="font-size:12px;color:#94a3b8">Plumber · Working level · 3.2 km</div>
+        </div>
+      </div>
+      <div class="cand">
+        <div class="av locked">S</div>
+        <div class="locked" style="flex:1">
+          <div><b>Worker #A2</b> · <span class="match">81% match</span></div>
+          <div style="font-size:12px;color:#94a3b8">Plumber · Working level · 4.6 km</div>
+        </div>
+      </div>
+    `
+  },
+  {
+    caption: ["4 · The Consent Gate (Privacy & Connection)",
+      "Ravi 'Interested' dabata hai → Consent screen aati hai jahan wo chunta hai kaunsi details share karni hain. Approve karne ke baad hi Meena ko Ravi ki profile dikhti hai. Ye ek HARD GATE hai."],
+    url: "app.kaamsetu.in/employer/candidates",
+    wa: `
+      <div class="msg in">Sharma Traders ki job pasand aayi?<span class="t">10:20</span>
+        <div class="quick"><span>✅ Interested</span><span>❌ Skip</span></div>
+      </div>
+      <div class="msg out">Interested<span class="t">10:20 ✓✓</span></div>
+      <div class="ai-card">
+        <div class="hd">Kya share karna hai? (aap choose karein)</div>
+        <div class="toggle-row"><span>Naam</span><span class="sw"></span></div>
+        <div class="toggle-row"><span>City / Area</span><span class="sw"></span></div>
+        <div class="toggle-row"><span>Phone number</span><span class="sw"></span></div>
+        <div class="toggle-row"><span>Skills &amp; Level</span><span class="sw"></span></div>
+        <div class="toggle-row"><span>Skill video</span><span class="sw off"></span></div>
+        <div class="toggle-row" style="border:none"><span>Education</span><span class="sw off"></span></div>
+      </div>
+      <div class="msg in">Bas! Aapki details <b>sirf</b> Sharma Traders ko dikhengi. Baaki sab dikhayi nahi jayengi 🔒<span class="t">10:21</span></div>
+    `,
+    emp: `
+      <h3>Candidates (Consent Unlocked)</h3>
+      <div class="sub">Sirf wahi fields dikh rahi hain jo Ravi ne approve ki.</div>
+      <div class="cand">
+        <div class="av">RK</div>
+        <div style="flex:1">
+          <div class="d-flex justify-content-between"><b>Ravi Kumar</b><span class="match">90% match</span></div>
+          <div style="font-size:12px;color:#94a3b8">Dhanbad · Plumber · Working level</div>
+          <div class="mt-1" style="font-size:12px">📞 +91 ••••• 2107 &nbsp; <span class="badge-ok">Consent ✓</span></div>
+        </div>
+      </div>
+      <div class="cand">
+        <div class="av locked">S</div>
+        <div class="locked" style="flex:1">
+          <div><b>Worker #A2</b></div>
+          <div style="font-size:12px;color:#94a3b8">Consent pending…</div>
+        </div>
+      </div>
+      <div class="mt-2"><span class="badge-ok">✓ Connected</span> <span class="badge-info">Hire in progress</span></div>
+    `
+  },
+  {
+    caption: ["5 · Follow-up System (Retention)",
+      "Kaam khatam nahi — Follow-up Agent Day 7, 30, 90 par dono se feedback lega: paisa time par mila? job satisfaction? Isse trust aur repeat hiring banti hai."],
+    url: "app.kaamsetu.in/employer/followups",
+    wa: `
+      <div class="msg in">Ravi ji, aap Sharma Traders me kaam shuru kar chuke hain. Ek chhota sawaal 👇<span class="t">Day 7 · 09:00</span></div>
+      <div class="msg in">Kya aapko <b>time par payment</b> mila?<span class="t">Day 7 · 09:00</span>
+        <div class="quick"><span>✅ Haan</span><span>⏳ Thoda late</span><span>❌ Nahi mila</span></div>
+      </div>
+      <div class="msg out">✅ Haan<span class="t">Day 7 · 09:04 ✓✓</span></div>
+      <div class="msg in">Khushi hui! Job se aap kitne khush hain (1–5)?<span class="t">Day 7 · 09:04</span>
+        <div class="quick"><span>⭐</span><span>⭐⭐⭐</span><span>⭐⭐⭐⭐⭐</span></div>
+      </div>
+      <div class="msg out">⭐⭐⭐⭐⭐<span class="t">Day 7 · 09:05 ✓✓</span></div>
+      <div class="msg in">Shukriya! Day 30 par phir poochhenge 🙏<span class="t">Day 7 · 09:05</span></div>
+    `,
+    emp: `
+      <h3>Follow-up Tracker</h3>
+      <div class="sub">Auto-scheduled feedback, WhatsApp par.</div>
+      <div class="row g-2 mb-3">
+        <div class="col-4"><div class="tile"><div class="stat">1</div><div class="stat-l">Active hire</div></div></div>
+        <div class="col-4"><div class="tile"><div class="stat" style="color:#34d399">5.0</div><div class="stat-l">Satisfaction</div></div></div>
+        <div class="col-4"><div class="tile"><div class="stat" style="color:#34d399">On time</div><div class="stat-l">Payment</div></div></div>
+      </div>
+      <div class="tile">
+        <div class="timeline">
+          <div class="tl"><div class="d">Day 7 — Completed ✅</div><div class="m">Payment: on time · Satisfaction: 5/5</div></div>
+          <div class="tl pending"><div class="d">Day 30 — Scheduled</div><div class="m">Reminder set · WhatsApp</div></div>
+          <div class="tl pending"><div class="d">Day 90 — Scheduled</div><div class="m">Retention + re-hire check</div></div>
+        </div>
+      </div>
+    `
+  }
+];
+
+const waBody = document.getElementById('waBody');
+const empPanel = document.getElementById('empPanel');
+const caption = document.getElementById('caption');
+const url = document.getElementById('url');
+const stepper = document.getElementById('stepper');
+
+function render(i){
+  const s = STEPS[i];
+  caption.innerHTML = `<h2>${s.caption[0]}</h2><p>${s.caption[1]}</p>`;
+  waBody.innerHTML = s.wa;
+  empPanel.innerHTML = s.emp;
+  url.textContent = s.url;
+  [...stepper.children].forEach((b,idx)=> b.classList.toggle('active', idx===i));
+}
+
+stepper.addEventListener('click', (e)=>{
+  const btn = e.target.closest('button[data-step]');
+  if(btn) render(+btn.dataset.step);
+});
+
+render(0);
+</script>
+</body>
+</html>

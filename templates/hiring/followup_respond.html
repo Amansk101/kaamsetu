@@ -1,0 +1,24 @@
+{% extends 'base.html' %}{% load ks_i18n %}
+{% block title %}{% t "followup_title" %} — {% t "brand" %}{% endblock %}
+{% block content %}
+<div class="narrow" style="max-width:640px">
+  <div class="glass">
+    <span class="badge-soft">{% t "followup_badge" %} · {{ followup.get_stage_display }}</span>
+    <h2 class="section-title mt-2">{% t "followup_heading" %}</h2>
+    <p class="muted mb-3">
+      {% t "followup_intro" title=followup.connection.job.title employer=followup.connection.job.employer.business_name %}
+    </p>
+    <form method="post">
+      {% csrf_token %}
+      {% for field in form %}
+        <div class="mb-3">
+          <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+          {{ field }}
+          {% for e in field.errors %}<div class="tiny" style="color:#dc2626">{{ e }}</div>{% endfor %}
+        </div>
+      {% endfor %}
+      <button class="ks-btn btn w-100 mt-4">{% t "followup_button" %}</button>
+    </form>
+  </div>
+</div>
+{% endblock %}

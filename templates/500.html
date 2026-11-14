@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Something went wrong" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card">
+    <span class="eyebrow">500</span>
+    <h1>{% t "Something went wrong" %}</h1>
+    <p class="auth-intro">{% t "We hit an unexpected problem. Please try again in a moment." %}</p>
+    <div class="auth-form">
+      <a class="button auth-submit" href="{% url 'core:landing' %}">{% t "Return home" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+  </section>
+</main>
+{% endblock %}

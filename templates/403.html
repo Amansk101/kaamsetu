@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Access denied" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main class="auth-page">
+  <section class="auth-card">
+    <span class="eyebrow">403</span>
+    <h1>{% t "Access denied" %}</h1>
+    <p class="auth-intro">{% t "You do not have permission to view this page." %}</p>
+    <div class="auth-form">
+      <a class="button auth-submit" href="{% url 'core:landing' %}">{% t "Return home" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+  </section>
+</main>
+{% endblock %}

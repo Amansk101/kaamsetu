@@ -1,0 +1,116 @@
+{% extends 'partials/dashboard_base.html' %}
+{% load ks_i18n %}
+
+{% block title %}{% t "Feedback" %} — KaamSetu{% endblock %}
+{% block dashboard_title %}{% t "Feedback & follow-up" %}{% endblock %}
+
+{% block dashboard_content %}
+<div class="page-intro">
+  <div>
+    <span class="eyebrow">{% t "Stay in touch after hiring" %}</span>
+    <h2>{% t "Follow-up feedback" %}</h2>
+    <p>{% t "Record how the placement is going at each milestone." %}</p>
+  </div>
+</div>
+
+{% if application %}
+  <div class="followup-summary">
+    <div class="company-avatar">{{ application.worker.full_name|slice:':1'|upper }}</div>
+    <div>
+      <span class="application-company">{{ application.job.company_label }}</span>
+      <h3>{{ application.worker.full_name }} — {{ application.job.title|tr }}</h3>
+      <div class="application-meta">
+        <span><i data-lucide="calendar-days"></i>{% t "Hired" %} {{ application.updated_at|date:"d M Y" }}</span>
+        <span><i data-lucide="map-pin"></i>{% if application.worker.location_display %}{{ application.worker.location_display }}{% else %}{% t "Location not specified" %}{% endif %}</span>
+      </div>
+    </div>
+  </div>
+
+  <section class="dashboard-panel">
+    <div class="panel-heading">
+      <div><span class="eyebrow">{% t "Completed milestones" %}</span><h2>{% t "Follow-up history" %}</h2></div>
+      <i data-lucide="sparkles"></i>
+    </div>
+    {% for record in application.feedback.all %}
+      <article class="notification-item">
+        <span class="notification-dot green"></span>
+        <div>
+          <strong>{% if record.milestone == 7 %}{% t "Day 7" %}{% elif record.milestone == 30 %}{% t "Day 30" %}{% else %}{% t "Day 90" %}{% endif %} · {{ record.rating }}/5</strong>
+          <p>{% if record.notes %}{{ record.notes }}{% else %}{% t "No notes added." %}{% endif %}</p>
+          <small>{{ record.created_at|date:"d M Y" }}</small>
+        </div>
+      </article>
+    {% empty %}
+      <p class="ks-muted">{% t "No follow-ups recorded yet for this worker." %}</p>
+    {% endfor %}
+  </section>
+
+  <form class="form-section settings-form" method="post" novalidate>
+    {% csrf_token %}
+    <input type="hidden" name="application" value="{{ application.id }}">
+    <div class="form-section-heading">
+      <span>01</span>
+      <div><h3>{% t "Add a follow-up" %}</h3><p>{% t "Choose the milestone, rate satisfaction and add notes." %}</p></div>
+    </div>
+
+    {% if form.non_field_errors %}
+      <div class="form-error-block" role="alert">
+        {% for error in form.non_field_errors %}<p class="field-error">{{ error }}</p>{% endfor %}
+      </div>
+    {% endif %}
+
+    <div class="form-grid">
+      <label>{% t "Follow-up milestone" %} *
+        {{ form.milestone }}
+        {% if form.milestone.errors %}<span class="field-error">{{ form.milestone.errors|join:", " }}</span>{% endif %}
+      </label>
+      <label>{% t "Job satisfaction (1–5)" %} *
+        {{ form.rating }}
+        {% if form.rating.errors %}<span class="field-error">{{ form.rating.errors|join:", " }}</span>{% endif %}
+      </label>
+      <label class="span-two">{% t "Notes" %}
+        {{ form.notes }}
+        {% if form.notes.errors %}<span class="field-error">{{ form.notes.errors|join:", " }}</span>{% endif %}
+      </label>
+    </div>
+
+    <div class="form-actions">
+      <button class="button" type="submit">{% t "Save follow-up" %}</button>
+      <a class="button button-secondary" href="{% url 'employers:hired' %}">{% t "Back to hired workers" %}</a>
+    </div>
+  </form>
+{% else %}
+  {% if hired_applications %}
+    <section class="dashboard-panel">
+      <div class="panel-heading">
+        <div><span class="eyebrow">{% t "Pick a worker" %}</span><h2>{% t "Hired workers" %}</h2></div>
+        <a href="{% url 'employers:hired' %}">{% t "Hired Workers" %} <i data-lucide="arrow-right"></i></a>
+      </div>
+      <div class="application-list">
+        {% for item in hired_applications %}
+          <article class="application-card">
+            <div class="company-avatar">{{ item.worker.full_name|slice:':1'|upper }}</div>
+            <div class="application-main">
+              <span class="application-company">{{ item.job.company_label }}</span>
+              <h3>{{ item.worker.full_name }} — {{ item.job.title|tr }}</h3>
+              <div class="application-meta">
+                <span><i data-lucide="calendar-days"></i>{% t "Hired" %} {{ item.updated_at|date:"d M Y" }}</span>
+              </div>
+            </div>
+            <div class="application-actions">
+              <a class="button button-secondary" href="{% url 'employers:feedback' %}?application={{ item.id }}">{% t "Add follow-up" %}</a>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    </section>
+  {% else %}
+    <div class="empty-state">
+      <span class="empty-state-icon"><i data-lucide="sparkles"></i></span>
+      <h3>{% t "No hired workers to follow up with" %}</h3>
+      <p>{% t "Hire a worker from your applications and their milestones will show up here." %}</p>
+      <a class="button" href="{% url 'employers:applications' %}">{% t "Review applications" %} <i data-lucide="arrow-right"></i></a>
+    </div>
+  {% endif %}
+{% endif %}
+{% endblock %}

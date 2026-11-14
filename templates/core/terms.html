@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static ks_i18n %}
+
+{% block title %}{% t "Terms and Conditions" %} — KaamSetu{% endblock %}
+
+{% block content %}
+<main>
+  <section class="landing-section about-section">
+    <div class="section-copy">
+      <span class="eyebrow">{% t "Legal" %}</span>
+      <h2>{% t "Terms and Conditions" %}</h2>
+      <p>{% t "By using KaamSetu you agree to use the platform honestly, share accurate information, and treat other workers and employers with respect." %}</p>
+    </div>
+  </section>
+
+  <section class="landing-section feature-section">
+    <div class="feature-grid">
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="user-round-check"></i></span>
+        <h3>{% t "Accurate profiles" %}</h3>
+        <p>{% t "Your profile, skills, and job details should be truthful. False information may lead to account suspension." %}</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="shield-check"></i></span>
+        <h3>{% t "Safe hiring" %}</h3>
+        <p>{% t "Never pay a fee for a job. Report any request for deposits, OTPs, or passwords right away." %}</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="handshake"></i></span>
+        <h3>{% t "Respectful use" %}</h3>
+        <p>{% t "Harassment, discrimination, and misuse of another person’s data are not allowed on KaamSetu." %}</p>
+      </article>
+      <article class="feature-card">
+        <span class="feature-icon"><i data-lucide="scale"></i></span>
+        <h3>{% t "Fair outcomes" %}</h3>
+        <p>{% t "KaamSetu helps connect people but does not guarantee a job, wage, or hiring decision." %}</p>
+      </article>
+    </div>
+  </section>
+
+  <section class="landing-cta">
+    <div>
+      <span class="eyebrow">{% t "Questions about our terms?" %}</span>
+      <h2>{% t "We are here to help." %}</h2>
+      <p>{% t "Reach out any time at support@kaamsetu.in." %}</p>
+    </div>
+    <a class="button" href="mailto:support@kaamsetu.in">{% t "Contact Us" %} <i data-lucide="mail"></i></a>
+  </section>
+</main>
+{% endblock %}

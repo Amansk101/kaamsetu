@@ -1,0 +1,44 @@
+{% load static ks_i18n %}<!DOCTYPE html>
+<html lang="{{ CURRENT_LANG|default:'en' }}" dir="{{ CURRENT_LANG_DIR|default:'ltr' }}">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}KaamSetu{% endblock %}</title>
+  <link rel="icon" type="image/png" href="{% static 'images/kaamsetu-brand-icon.png' %}">
+  <link href="{% static 'css/index.css' %}" rel="stylesheet">
+  <link href="{% static 'css/kaamsetu.css' %}" rel="stylesheet">
+  <link href="{% static 'css/components.css' %}" rel="stylesheet">
+  <link href="{% static 'css/pages.css' %}" rel="stylesheet">
+  <link href="{% static 'css/forms.css' %}" rel="stylesheet">
+  <link href="{% static 'css/fallback-visuals.css' %}" rel="stylesheet">
+  <link href="{% static 'css/images.css' %}" rel="stylesheet">
+  <link href="{% static 'css/visual-polish.css' %}" rel="stylesheet">
+  <link href="{% static 'css/django.css' %}" rel="stylesheet">
+  <link href="{% static 'css/theme.css' %}" rel="stylesheet">
+</head>
+<body>
+{% block nav %}{% include 'partials/navbar.html' %}{% endblock %}
+{% block content %}{% endblock %}
+{% block footer %}{% include 'partials/footer.html' %}{% endblock %}
+
+<dialog class="auth-dialog" data-auth-dialog aria-label="KaamSetu account form">
+  <button class="auth-dialog-close" type="button" data-auth-dialog-close aria-label="Close">&times;</button>
+  <div data-auth-dialog-body></div>
+</dialog>
+
+{% if messages %}
+  <div class="ks-toasts" role="status" aria-live="polite">
+    {% for message in messages %}
+      <div class="ks-toast ks-toast-{{ message.tags|default:'info' }}">
+        <span>{{ message }}</span>
+        <button type="button" aria-label="{% t 'Close' %}" data-dismiss-toast>&times;</button>
+      </div>
+    {% endfor %}
+  </div>
+{% endif %}
+
+<script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
+<script src="{% static 'js/kaamsetu.js' %}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>
