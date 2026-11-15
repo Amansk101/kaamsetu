@@ -279,6 +279,8 @@ KAAMSETU = {
         or ''
     ),
     'GEMINI_MODEL': os.environ.get('KAAMSETU_GEMINI_MODEL', 'gemini-2.5-flash'),
+    # Low-cost chatbot model with an API free tier; override through Render env.
+    'CHATBOT_MODEL': os.environ.get('KAAMSETU_CHATBOT_MODEL', 'gemini-3.5-flash-lite'),
     # Switcher me jo languages dikhengi wo core.i18n.LANGUAGES se aati hain —
     # poora list ek hi jagah (core/i18n.py) rehta hai.
     'MATCH_MAX_DISTANCE_KM': 25,

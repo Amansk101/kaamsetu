@@ -6,6 +6,7 @@ app_name = 'core'
 
 urlpatterns = [
     path('', views.landing, name='landing'),
+    path('help/chat/', views.chat_assistant, name='chat_assistant'),
     path('home/', views.landing, name='home'),
     path('select-role/', views.select_role, name='select_role'),
     path('go/', views.go, name='go'),

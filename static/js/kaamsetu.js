@@ -18,6 +18,7 @@
       body.replaceChildren(page);
       bindForm(body.querySelector('form'), target.href);
       if (window.lucide) window.lucide.createIcons();
+      if (window.KaamSetuEnhanceVoiceInputs) window.KaamSetuEnhanceVoiceInputs(body);
       if (!dialog.open) {
         dialog.showModal();
         document.body.classList.add('auth-modal-open');
@@ -52,6 +53,7 @@
               body.replaceChildren(nextPage);
               bindForm(body.querySelector('form'), action);
               if (window.lucide) window.lucide.createIcons();
+              if (window.KaamSetuEnhanceVoiceInputs) window.KaamSetuEnhanceVoiceInputs(body);
             }
           });
     });

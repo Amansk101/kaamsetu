@@ -1,8 +1,12 @@
-from django.http import HttpResponseRedirect
+import json
+
+from django.http import HttpResponseRedirect, JsonResponse
 from django.shortcuts import redirect, render
 from django.urls import reverse
+from django.views.decorators.http import require_POST
 from django.utils.http import url_has_allowed_host_and_scheme
 
+from .chatbot import MAX_QUESTION_LENGTH, _under_rate_limit, ai_is_enabled, answer_question
 from .i18n import DEFAULT_LANGUAGE, LANGUAGE_CODES
 
 SESSION_KEY = 'ks_language'
@@ -55,6 +59,50 @@ def privacy(request):
 
 def terms(request):
     return render(request, 'core/terms.html')
+
+
+@require_POST
+def chat_assistant(request):
+    """Answer a single KaamSetu help question through the optional free AI tier."""
+    if not ai_is_enabled():
+        return JsonResponse({'error': 'assistant_not_configured'}, status=503)
+    if len(request.body) > 8192:
+        return JsonResponse({'error': 'question_too_long'}, status=413)
+    try:
+        data = json.loads(request.body.decode('utf-8'))
+    except (UnicodeDecodeError, json.JSONDecodeError):
+        return JsonResponse({'error': 'invalid_request'}, status=400)
+    if not isinstance(data, dict):
+        return JsonResponse({'error': 'invalid_request'}, status=400)
+    question = str(data.get('question') or '').strip()
+    if not question:
+        return JsonResponse({'error': 'empty_question'}, status=400)
+    if len(question) > MAX_QUESTION_LENGTH:
+        return JsonResponse({'error': 'question_too_long'}, status=413)
+
+    history = data.get('history') or []
+    if not isinstance(history, list) or len(history) > 6:
+        return JsonResponse({'error': 'invalid_history'}, status=400)
+    safe_history = []
+    for item in history:
+        if not isinstance(item, dict) or item.get('role') not in {'user', 'model'}:
+            continue
+        text = str(item.get('text') or '').strip()
+        if text:
+            safe_history.append({'role': item['role'], 'text': text[:MAX_QUESTION_LENGTH]})
+    if not safe_history or safe_history[-1]['role'] != 'user' or safe_history[-1]['text'] != question:
+        safe_history.append({'role': 'user', 'text': question})
+
+    client_ip = request.META.get('REMOTE_ADDR', '')
+    if not _under_rate_limit(client_ip):
+        return JsonResponse({'error': 'rate_limited'}, status=429)
+
+    role = request.user.role if request.user.is_authenticated else 'visitor'
+    language = getattr(request, 'KS_LANG', DEFAULT_LANGUAGE)
+    reply = answer_question(question, role, language, safe_history)
+    if not reply:
+        return JsonResponse({'error': 'assistant_temporarily_unavailable'}, status=502)
+    return JsonResponse({'answer': reply, 'ai': True})
 
 
 def not_found(request, exception=None):

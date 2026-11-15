@@ -277,6 +277,23 @@ profile me add ho jaati hai (`WorkerSkill`, source = AI, verified = True).
   detect hoti hai (jaise `cooking.mp4` -> Cook) aur report rule-based banti hai.
   Agar worker khud skill select kar le, to AI call hi nahi hoti.
 
+## AI Help Assistant
+
+The site-wide worker/employer help chat uses the Gemini API model
+`gemini-3.5-flash-lite` when `KAAMSETU_GEMINI_API_KEY` is configured. It sends
+the current question, up to three recent message pairs, role, and interface
+language; KaamSetu does not store chat text. The API free tier has changing usage limits, and Google may
+use free-tier prompts to improve its products. The help panel warns users not
+to share passwords, OTPs, or private details. If no key is set or Gemini is
+unavailable, the local FAQ answers common questions and directs unresolved
+issues to support.
+
+- Get a key in [Google AI Studio](https://aistudio.google.com/apikey).
+- Set `KAAMSETU_GEMINI_API_KEY` in local `.env` or as a secret environment
+  variable in Render. Never commit the key or paste it into browser code.
+- The default model can be changed with `KAAMSETU_CHATBOT_MODEL`.
+- Requests are limited per client IP and questions are capped at 600 characters.
+
 ---
 
 ## Feature checklist
