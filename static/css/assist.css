@@ -17,13 +17,12 @@
 .ks-help-suggestions{display:flex;flex-wrap:wrap;gap:7px;padding:10px 12px 2px;background:#fff}
 .ks-help-suggestions button{padding:7px 10px;border:1px solid var(--line,#e8dfd0);border-radius:999px;background:#fff;color:var(--brand-forest,#234b3d);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer}
 .ks-help-suggestions button:hover{background:var(--brand-cream,#fbf7ed)}
-.ks-help-form{display:flex;gap:7px;padding:10px 12px 8px;background:#fff}
-.ks-help-form input{min-width:0;flex:1;padding:10px 11px;border:1px solid #d9e1d8;border-radius:11px;font-family:inherit;font-size:14px}
-.ks-help-form button{display:grid;width:40px;min-width:40px;place-items:center;border:0;border-radius:11px;cursor:pointer}
+.ks-help-form{display:flex;align-items:center;gap:8px;padding:10px 12px;background:#fff}
+.ks-help-form input{box-sizing:border-box;height:44px;min-width:0;flex:1;padding:10px 11px;border:1px solid var(--line-2,#d7cbb9);border-radius:11px;font-family:inherit;font-size:14px}
+.ks-help-form button{box-sizing:border-box;display:grid;flex:0 0 44px;width:44px;height:44px;min-width:44px;padding:0;place-items:center;border:1px solid transparent;border-radius:12px;cursor:pointer}
+.ks-help-form button svg{display:block;width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .ks-help-mic{background:var(--brand-cream,#fbf7ed);color:var(--brand-forest,#234b3d)}.ks-help-mic:hover{background:var(--brand-cream-light,#fff9ec)}
 .ks-help-send{background:var(--brand-forest,#234b3d);color:#fff}
-.ks-help-note{margin:0;padding:0 13px 11px;background:#fff;color:#748279;font-size:10px;line-height:1.4}
-.ks-help-note a{color:var(--brand-forest,#234b3d);font-weight:700}
 .ks-voice-wrap{display:flex;align-items:stretch;gap:7px;width:100%;min-width:0}
 .ks-voice-wrap>input,.ks-voice-wrap>textarea{min-width:0;flex:1}
 .ks-voice-wrap .ks-voice-button{flex:0 0 42px}
@@ -34,7 +33,7 @@
 .ks-voice-status{display:block;min-height:1em;margin-top:4px;color:#61736a;font-size:11px;font-weight:500}
 .ks-voice-wrap .ks-voice-status{position:absolute;top:100%;left:0;margin-top:1px}
 .ks-voice-wrap.has-voice-status{margin-bottom:18px}
-.ks-voice-chat-status{margin:0;padding:0 13px;background:#fff}
+.ks-voice-chat-status{margin:0;padding:0 13px 8px;background:#fff}
 .ks-voice-wrap{position:relative}
 .input-with-icon.ks-voice-wrap{flex-wrap:nowrap}
 .input-with-icon.ks-voice-wrap>input{width:100%;flex:1}

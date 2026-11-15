@@ -15,7 +15,7 @@
   <link href="{% static 'css/visual-polish.css' %}" rel="stylesheet">
   <link href="{% static 'css/django.css' %}" rel="stylesheet">
   <link href="{% static 'css/theme.css' %}" rel="stylesheet">
-  <link href="{% static 'css/assist.css' %}?v=3" rel="stylesheet">
+  <link href="{% static 'css/assist.css' %}?v=4" rel="stylesheet">
 </head>
 <body data-user-role="{% if user.is_authenticated %}{% if user.is_employer %}employer{% else %}worker{% endif %}{% else %}visitor{% endif %}">
 {% block nav %}{% include 'partials/navbar.html' %}{% endblock %}
@@ -66,11 +66,10 @@
       {% csrf_token %}
       <label class="sr-only" for="ks-help-input">{% if CURRENT_LANG == 'hi' %}KaamSetu se sawaal poochhein{% else %}Ask a KaamSetu question{% endif %}</label>
       <input id="ks-help-input" type="text" data-help-input data-no-voice autocomplete="off" placeholder="{% if CURRENT_LANG == 'hi' %}Apna sawaal likho…{% else %}Type your question…{% endif %}">
-      <button type="button" class="ks-voice-button ks-help-mic" data-voice-button data-no-voice aria-label="{% if CURRENT_LANG == 'hi' %}Sawaal bolkar poochhein{% else %}Speak your question{% endif %}" title="{% if CURRENT_LANG == 'hi' %}Sawaal bolkar poochhein{% else %}Speak your question{% endif %}"><i data-lucide="mic" aria-hidden="true"></i></button>
-      <button type="submit" class="ks-help-send" aria-label="Send question"><i data-lucide="send" aria-hidden="true"></i></button>
+      <button type="button" class="ks-voice-button ks-help-mic" data-voice-button data-no-voice aria-label="{% if CURRENT_LANG == 'hi' %}Sawaal bolkar poochhein{% else %}Speak your question{% endif %}" title="{% if CURRENT_LANG == 'hi' %}Sawaal bolkar poochhein{% else %}Speak your question{% endif %}"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><rect x="9" y="2" width="6" height="12" rx="3"></rect><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"></path></svg></button>
+      <button type="submit" class="ks-help-send" aria-label="Send question"><svg viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m22 2-7 20-4-9-9-4 20-7ZM22 2 11 13"></path></svg></button>
     </form>
     <p class="ks-voice-status ks-voice-chat-status" data-voice-chat-status aria-live="polite"></p>
-    <p class="ks-help-note">{% if CHATBOT_AI_ENABLED %}AI is on: your question, recent chat context, account role, and language go to Google Gemini. Google may use free-tier prompts to improve its products, so do not include passwords, phone numbers, or private details. {% else %}AI answers need an API key; common app guidance still works. {% endif %}Chat is not saved by KaamSetu. Voice recognition is handled by your browser and may process audio online; KaamSetu does not upload mic audio, and dictated form text is sent only when you submit the form. For other issues, <a href="mailto:support@kaamsetu.in">email support</a>.</p>
   </div>
 </section>
 
