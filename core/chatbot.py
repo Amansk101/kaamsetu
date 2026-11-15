@@ -11,6 +11,75 @@ from django.core.cache import cache
 MAX_QUESTION_LENGTH = 600
 MAX_REQUESTS_PER_MINUTE = 8
 
+# Product documentation sent with each chat request. Keep this grounded in
+# implemented flows; the assistant does not receive live account/database data.
+SITE_KNOWLEDGE = """
+KAAMSETU PRODUCT GUIDE (verified app behavior)
+
+Purpose: KaamSetu connects local workers with employers in India. It supports
+worker and employer accounts, local-language UI, job discovery, applications,
+skill profiles, hiring consent, and basic listing safety checks. The interface
+uses simple step-by-step forms for people with different education levels.
+
+PUBLIC PAGES: Home /, About /about/, How it works /how-it-works/, choose role
+/select-role/, Privacy /privacy/, Terms /terms/. Create an account from Register
+and choose Worker or Employer. Sign in with Login. Never ask users to share
+passwords, OTPs, bank details, or identity documents in chat.
+
+WORKER FLOW: Dashboard /worker/dashboard/; profile /worker/profile/; upload a
+work sample /worker/video/; review AI skill analysis /worker/skills/; browse
+recommended jobs /worker/jobs/; applications /worker/applications/;
+notifications /worker/notifications/; preferences /worker/settings/.
+Complete profile details such as skills, experience, location, availability,
+and work preferences to improve discovery. Browse a job, open its details, and
+apply; a worker can save a job and withdraw an application. Application states
+include Applied, Under Review, Shortlisted, Interview, Selected, Rejected, and
+Hired. The assistant cannot see which jobs this user applied to or their current
+application status.
+
+SKILL VIDEO: Workers can upload a short video showing practical work. If the
+Gemini vision key is configured, the app can suggest skills from it; the worker
+reviews/accepts suggestions before they are treated as accepted profile skills.
+Without that separate vision key, AI video analysis may be unavailable. A
+suggested skill is not a certificate or proof of qualification.
+
+EMPLOYER FLOW: Dashboard /employer/dashboard/; post a job
+/employer/jobs/new/; manage jobs /employer/jobs/; discover workers
+/employer/workers/; applications /employer/applications/; hired workers
+/employer/hired/; feedback /employer/feedback/; notifications
+/employer/notifications/; settings /employer/settings/. A listing asks for a
+title, location, work type, wage range, skills, and a useful description. The
+employer can review candidates and update application stages. Hiring is tied to
+a worker-approved connection flow; do not promise an employer can bypass that
+consent step. Worker profile visibility settings affect discovery. In a hiring
+connection, workers can approve or decline requested profile details such as
+contact information, education, skills, or video.
+
+MATCHING AND SAFETY: Recommendations use practical matching signals such as
+skills, location/distance, wage, availability, and trust signals. This is a
+heuristic ranking, not a guarantee, an employment decision, or a promise of a
+job. Listing checks are rule-based and can flag upfront fees, suspicious
+phrases, unusually high wages, or missing details; they cannot guarantee a
+listing or person is safe. Never call a user or listing verified. Tell users to
+avoid paying to get a job, verify details independently, and report suspicious
+activity through available support channels.
+
+CHAT AND VOICE: The help chatbot is a separate optional Gemini integration. It
+answers general KaamSetu/how-to questions but cannot access a user's profile,
+applications, employer records, or change data. If AI is not configured or is
+temporarily unavailable, tell the user to try later or contact
+support@kaamsetu.in. Voice buttons use browser speech recognition to convert
+speech into form text when the browser/device supports it; users should review
+the transcription before submitting. Voice recognition may require browser
+permission and may not work in every language/browser.
+
+PRIVACY / LIMITS: Do not infer account facts. Do not invent page links, fees,
+policies, guarantees, or support hours. If asked about a page not listed here,
+give the closest known navigation path or say you are unsure and direct them to
+support@kaamsetu.in. Answer in the user's chosen language and script, with
+simple concise steps. If unrelated to KaamSetu or work, politely redirect.
+"""
+
 
 def ai_is_enabled():
     return bool(settings.KAAMSETU.get('GEMINI_API_KEY'))
@@ -64,10 +133,7 @@ def answer_question(question, role, language, history=None):
         'Never claim a job, employer, worker, payment, or account has been verified. '
         'Never ask for passwords, OTPs, bank details, or sensitive personal information. '
         'For account-specific or unresolved problems, tell them to contact support@kaamsetu.in. '
-        'Known pages: worker profile /worker/profile/, worker jobs /worker/jobs/, worker applications '
-        '/worker/applications/, skill video /worker/video/, employer settings /employer/settings/, employer jobs '
-        '/employer/jobs/, new job /employer/jobs/new/, employer applications /employer/applications/, privacy /privacy/. '
-        'Do not invent other URLs. '
+    ) + SITE_KNOWLEDGE + '\n' + (
         'If unrelated to KaamSetu or finding work, briefly say you can only help with KaamSetu and work questions. '
         'Keep the reply under 100 words. The current user role is ' + role_name + '.'
     )
