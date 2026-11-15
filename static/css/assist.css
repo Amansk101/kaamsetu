@@ -1,34 +1,34 @@
-.ks-help{position:fixed;right:22px;bottom:20px;z-index:80;font-family:inherit;color:#263b32}
-.ks-help-launcher{display:flex;align-items:center;gap:9px;min-height:52px;padding:0 18px;border:0;border-radius:999px;background:#245746;color:#fff;box-shadow:0 8px 28px rgba(25,58,48,.25);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.ks-help{position:fixed;right:22px;bottom:20px;z-index:80;font-family:inherit;color:var(--brand-brown,#352b24)}
+.ks-help-launcher{display:flex;align-items:center;gap:9px;min-height:52px;padding:0 18px;border:0;border-radius:999px;background:var(--brand-forest,#234b3d);color:#fff;box-shadow:0 8px 28px rgba(25,58,48,.25);font-family:inherit;font-size:14px;font-weight:700;cursor:pointer}
 .ks-help-launcher svg{width:19px;height:19px}
-.ks-help-launcher:hover,.ks-help-send:hover{background:#193a30}
-.ks-help-panel{position:absolute;right:0;bottom:64px;display:flex;flex-direction:column;width:min(370px,calc(100vw - 28px));height:min(540px,calc(100dvh - 110px));overflow:hidden;border:1px solid #d9e1d8;border-radius:20px;background:#fff;box-shadow:0 16px 48px rgba(25,58,48,.22)}
+.ks-help-launcher:hover,.ks-help-send:hover{background:var(--brand-forest-dark,#193a30)}
+.ks-help-panel{position:absolute;right:0;bottom:64px;display:flex;flex-direction:column;width:min(370px,calc(100vw - 28px));height:min(540px,calc(100dvh - 110px));overflow:hidden;border:1px solid var(--line,#e8dfd0);border-radius:20px;background:var(--brand-page,#fbf9f4);box-shadow:0 16px 48px rgba(25,58,48,.22)}
 .ks-help-panel[hidden]{display:none}
-.ks-help-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;background:#245746;color:#fff}
+.ks-help-header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;background:var(--brand-forest,#234b3d);color:#fff}
 .ks-help-header strong,.ks-help-header small{display:block}.ks-help-header strong{font-size:15px}.ks-help-header small{margin-top:3px;color:#dce9dd;font-size:11px}
 .ks-help-close{width:34px;height:34px;border:0;border-radius:50%;background:rgba(255,255,255,.12);color:#fff;font-size:25px;line-height:1;cursor:pointer}
 .ks-help-language{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;border-bottom:1px solid #e7ece6;color:#61736a;font-size:12px}
-.ks-help-language select{padding:5px 8px;border:1px solid #d9e1d8;border-radius:8px;background:#fff;color:#263b32;font:inherit}
-.ks-help-messages{display:flex;flex:1;flex-direction:column;gap:10px;overflow:auto;padding:14px;background:#f4f6f1;overscroll-behavior:contain}
-.ks-help-message{max-width:90%;padding:10px 12px;border-radius:14px;background:#fff;color:#263b32;font-size:13px;line-height:1.5;overflow-wrap:anywhere}
-.ks-help-message.is-user{align-self:flex-end;background:#245746;color:#fff}
-.ks-help-message a{display:inline-block;margin-top:7px;color:#245746;font-weight:700;text-decoration:underline}
+.ks-help-language select{padding:5px 8px;border:1px solid var(--line,#e8dfd0);border-radius:8px;background:#fff;color:var(--brand-brown,#352b24);font:inherit}
+.ks-help-messages{display:flex;flex:1;flex-direction:column;gap:10px;overflow:auto;padding:14px;background:var(--brand-cream,#fbf7ed);overscroll-behavior:contain}
+.ks-help-message{max-width:90%;padding:10px 12px;border-radius:14px;background:#fff;color:var(--brand-brown,#352b24);font-size:13px;line-height:1.5;overflow-wrap:anywhere}
+.ks-help-message.is-user{align-self:flex-end;background:var(--brand-forest,#234b3d);color:#fff}
+.ks-help-message a{display:inline-block;margin-top:7px;color:var(--brand-forest,#234b3d);font-weight:700;text-decoration:underline}
 .ks-help-message.is-user a{color:#fff}
 .ks-help-suggestions{display:flex;flex-wrap:wrap;gap:7px;padding:10px 12px 2px;background:#fff}
-.ks-help-suggestions button{padding:7px 10px;border:1px solid #d9e1d8;border-radius:999px;background:#fff;color:#245746;font-family:inherit;font-size:11px;font-weight:600;cursor:pointer}
-.ks-help-suggestions button:hover{background:#eef1e9}
+.ks-help-suggestions button{padding:7px 10px;border:1px solid var(--line,#e8dfd0);border-radius:999px;background:#fff;color:var(--brand-forest,#234b3d);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer}
+.ks-help-suggestions button:hover{background:var(--brand-cream,#fbf7ed)}
 .ks-help-form{display:flex;gap:7px;padding:10px 12px 8px;background:#fff}
 .ks-help-form input{min-width:0;flex:1;padding:10px 11px;border:1px solid #d9e1d8;border-radius:11px;font-family:inherit;font-size:14px}
 .ks-help-form button{display:grid;width:40px;min-width:40px;place-items:center;border:0;border-radius:11px;cursor:pointer}
-.ks-help-mic{background:#eef1e9;color:#245746}.ks-help-mic:hover{background:#dce9dd}
-.ks-help-send{background:#245746;color:#fff}
+.ks-help-mic{background:var(--brand-cream,#fbf7ed);color:var(--brand-forest,#234b3d)}.ks-help-mic:hover{background:var(--brand-cream-light,#fff9ec)}
+.ks-help-send{background:var(--brand-forest,#234b3d);color:#fff}
 .ks-help-note{margin:0;padding:0 13px 11px;background:#fff;color:#748279;font-size:10px;line-height:1.4}
-.ks-help-note a{color:#245746;font-weight:700}
+.ks-help-note a{color:var(--brand-forest,#234b3d);font-weight:700}
 .ks-voice-wrap{display:flex;align-items:stretch;gap:7px;width:100%;min-width:0}
 .ks-voice-wrap>input,.ks-voice-wrap>textarea{min-width:0;flex:1}
 .ks-voice-wrap .ks-voice-button{flex:0 0 42px}
-.ks-voice-button{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:42px;padding:8px;border:1px solid #d2ddd1;border-radius:10px;background:#f4f6f1;color:#245746;cursor:pointer}
-.ks-voice-button:hover{background:#e3eddf}
+.ks-voice-button{display:inline-flex;align-items:center;justify-content:center;min-width:42px;min-height:42px;padding:8px;border:1px solid var(--line-2,#d7cbb9);border-radius:10px;background:var(--brand-cream,#fbf7ed);color:var(--brand-forest,#234b3d);cursor:pointer}
+.ks-voice-button:hover{background:var(--brand-cream-light,#fff9ec)}
 .ks-voice-button[aria-pressed="true"]{border-color:#b8473d;background:#fff0ed;color:#a33e35;animation:ks-mic-pulse 1.2s ease-in-out infinite}
 .ks-voice-button svg{width:18px;height:18px}
 .ks-voice-status{display:block;min-height:1em;margin-top:4px;color:#61736a;font-size:11px;font-weight:500}
@@ -39,7 +39,7 @@
 .input-with-icon.ks-voice-wrap{flex-wrap:nowrap}
 .input-with-icon.ks-voice-wrap>input{width:100%;flex:1}
 .input-with-icon.ks-voice-wrap .ks-voice-button{flex:0 0 38px;min-width:38px;min-height:38px}
-.ks-voice-button:focus-visible,.ks-help button:focus-visible,.ks-help a:focus-visible,.ks-help select:focus-visible,.ks-help input:focus-visible{outline:3px solid #e6a64e;outline-offset:2px}
+.ks-voice-button:focus-visible,.ks-help button:focus-visible,.ks-help a:focus-visible,.ks-help select:focus-visible,.ks-help input:focus-visible{outline:3px solid var(--brand-mustard,#e2b544);outline-offset:2px}
 @keyframes ks-mic-pulse{50%{box-shadow:0 0 0 5px rgba(184,71,61,.14)}}
 @media(max-width:600px){.ks-help{right:12px;bottom:12px}.ks-help-launcher{min-height:48px;padding:0 15px}.ks-help-panel{right:-2px;bottom:58px;width:min(390px,calc(100vw - 24px));height:min(570px,calc(100dvh - 90px));border-radius:17px}.ks-voice-button{min-width:40px;min-height:40px}.input-with-icon.ks-voice-wrap .ks-voice-button{flex-basis:36px;min-width:36px}}
 @media(prefers-reduced-motion:reduce){.ks-voice-button[aria-pressed="true"]{animation:none}}

@@ -118,9 +118,12 @@ def answer_question(question, role, language, history=None):
         return ''
     url = f'https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent'
     language_names = {
-        'hi': 'Hindi', 'en': 'English', 'mr': 'Marathi', 'bn': 'Bangla',
+        'en': 'English', 'hi': 'Hindi', 'mr': 'Marathi', 'bn': 'Bangla',
         'ta': 'Tamil', 'te': 'Telugu', 'gu': 'Gujarati', 'kn': 'Kannada',
-        'ml': 'Malayalam', 'pa': 'Punjabi', 'ur': 'Urdu', 'bho': 'Bhojpuri',
+        'ml': 'Malayalam', 'pa': 'Punjabi', 'or': 'Odia', 'as': 'Assamese',
+        'ur': 'Urdu', 'ne': 'Nepali', 'bho': 'Bhojpuri', 'mai': 'Maithili',
+        'kok': 'Konkani', 'doi': 'Dogri', 'sa': 'Sanskrit', 'sd': 'Sindhi',
+        'ks': 'Kashmiri', 'mni': 'Meitei (Manipuri)', 'brx': 'Bodo', 'sat': 'Santali',
     }
     language_name = language_names.get(language, 'simple English')
     role_name = role if role in {'worker', 'employer'} else 'visitor'

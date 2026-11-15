@@ -36,42 +36,97 @@
   }
 
   function beginDictation(button, field) {
+    if (activeVoiceSession && activeVoiceSession.button === button) {
+      stopDictation(activeVoiceSession, 'Voice typing stopped.');
+      return;
+    }
     if (!SpeechRecognition) {
       setVoiceStatus(button, 'Voice typing is not supported here. Try Chrome on Android or type instead.');
       return;
     }
-    if (activeRecognition) activeRecognition.abort();
-    var recognition = new SpeechRecognition();
-    activeRecognition = recognition;
-    recognition.lang = voiceLanguage();
-    recognition.continuous = false;
-    recognition.interimResults = false;
-    button.setAttribute('aria-pressed', 'true');
-    setVoiceStatus(button, 'Listening… speak now.');
+    if (activeVoiceSession) stopDictation(activeVoiceSession, 'Voice typing stopped.');
 
-    recognition.onresult = function (event) {
-      var transcript = Array.prototype.map.call(event.results, function (result) {
-        return result[0] && result[0].transcript ? result[0].transcript : '';
-      }).join(' ').trim();
-      insertTranscript(field, transcript);
-      setVoiceStatus(button, transcript ? 'Voice text added. Please check it before saving.' : 'No speech heard. Tap the mic and try again.');
+    var session = {
+      button: button, field: field, transcript: '', recognition: null,
+      stopped: false, startedAt: Date.now(), timer: null
     };
-    recognition.onerror = function (event) {
-      var message = event.error === 'not-allowed' || event.error === 'service-not-allowed'
-        ? 'Microphone permission is off. Allow it in your browser settings, then try again.'
-        : event.error === 'no-speech' ? 'No speech heard. Tap the mic and try again.'
-        : 'Voice typing stopped. Please try again or type instead.';
-      setVoiceStatus(button, message);
-    };
-    recognition.onend = function () {
-      button.setAttribute('aria-pressed', 'false');
-      if (activeRecognition === recognition) activeRecognition = null;
-    };
-    try { recognition.start(); }
-    catch (error) {
-      button.setAttribute('aria-pressed', 'false');
-      activeRecognition = null;
-      setVoiceStatus(button, 'Could not start the microphone. Tap once and try again.');
+    activeVoiceSession = session;
+    button.setAttribute('aria-pressed', 'true');
+    button.title = 'Listening - tap to stop';
+
+    function secondsLeft() {
+      return Math.max(0, 30 - Math.floor((Date.now() - session.startedAt) / 1000));
+    }
+    function startRecognition() {
+      if (session.stopped || secondsLeft() <= 0) return;
+      var recognition = new SpeechRecognition();
+      session.recognition = recognition;
+      activeRecognition = recognition;
+      recognition.lang = voiceLanguage();
+      recognition.continuous = true;
+      recognition.interimResults = true;
+      recognition.onresult = function (event) {
+        for (var i = event.resultIndex; i < event.results.length; i++) {
+          var result = event.results[i];
+          var text = result[0] && result[0].transcript ? result[0].transcript.trim() : '';
+          if (result.isFinal && text) session.transcript += (session.transcript ? ' ' : '') + text;
+        }
+        setVoiceStatus(button, 'Listening... ' + secondsLeft() + ' sec left. Tap the mic to stop.');
+      };
+      recognition.onerror = function (event) {
+        if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+          stopDictation(session, 'Microphone permission is off. Allow it in your browser settings, then try again.');
+        } else if (event.error !== 'no-speech' && event.error !== 'aborted') {
+          stopDictation(session, 'Voice typing stopped. Please try again or type instead.');
+        }
+      };
+      recognition.onend = function () {
+        if (activeRecognition === recognition) activeRecognition = null;
+        if (!session.stopped && secondsLeft() > 0) startRecognition();
+        else if (!session.stopped) finishDictation(session, '');
+        else finishDictation(session, '');
+      };
+      try { recognition.start(); }
+      catch (error) {
+        if (!session.stopped) stopDictation(session, 'Could not start the microphone. Tap once and try again.');
+      }
+    }
+
+    session.timer = window.setInterval(function () {
+      var remaining = secondsLeft();
+      if (remaining <= 0) stopDictation(session, '');
+      else setVoiceStatus(button, 'Listening... ' + remaining + ' sec left. Tap the mic to stop.');
+    }, 250);
+    setVoiceStatus(button, 'Listening... 30 sec left. Tap the mic to stop.');
+    startRecognition();
+  }
+
+  function finishDictation(session, message) {
+    if (!session || activeVoiceSession !== session) return;
+    window.clearInterval(session.timer);
+    session.stopped = true;
+    if (session.transcript) {
+      insertTranscript(session.field, session.transcript);
+      setVoiceStatus(session.button, 'Voice text added. Please check it before saving.');
+    } else {
+      setVoiceStatus(session.button, message || 'No speech heard. Tap the mic and try again.');
+    }
+    session.button.setAttribute('aria-pressed', 'false');
+    session.button.title = 'Fill this field by voice';
+    if (activeRecognition === session.recognition) activeRecognition = null;
+    activeVoiceSession = null;
+  }
+
+  function stopDictation(session, message) {
+    if (!session || session.stopped) return;
+    session.stopped = true;
+    window.clearInterval(session.timer);
+    var recognition = session.recognition;
+    if (recognition && activeRecognition === recognition) {
+      try { recognition.stop(); } catch (error) { finishDictation(session, message); }
+      window.setTimeout(function () { finishDictation(session, message); }, 800);
+    } else {
+      finishDictation(session, message);
     }
   }
 

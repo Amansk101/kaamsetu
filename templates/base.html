@@ -15,7 +15,7 @@
   <link href="{% static 'css/visual-polish.css' %}" rel="stylesheet">
   <link href="{% static 'css/django.css' %}" rel="stylesheet">
   <link href="{% static 'css/theme.css' %}" rel="stylesheet">
-  <link href="{% static 'css/assist.css' %}?v=2" rel="stylesheet">
+  <link href="{% static 'css/assist.css' %}?v=3" rel="stylesheet">
 </head>
 <body data-user-role="{% if user.is_authenticated %}{% if user.is_employer %}employer{% else %}worker{% endif %}{% else %}visitor{% endif %}">
 {% block nav %}{% include 'partials/navbar.html' %}{% endblock %}
@@ -34,15 +34,30 @@
     <div class="ks-help-language">
       <label for="ks-voice-language">{% if CURRENT_LANG == 'hi' %}Boli ki bhasha{% else %}Voice language{% endif %}</label>
       <select id="ks-voice-language" data-voice-language aria-label="Choose voice input language">
-        <option value="hi-IN">Hindi</option>
-        <option value="en-IN">English (India)</option>
-        <option value="mr-IN">Marathi</option>
-        <option value="bn-IN">Bangla</option>
-        <option value="ta-IN">Tamil</option>
-        <option value="te-IN">Telugu</option>
-        <option value="gu-IN">Gujarati</option>
-        <option value="pa-IN">Punjabi</option>
-        <option value="ur-IN">Urdu</option>
+        <option value="en-IN" {% if CURRENT_LANG == 'en' %}selected{% endif %}>English (India)</option>
+        <option value="hi-IN" {% if CURRENT_LANG == 'hi' %}selected{% endif %}>Hindi</option>
+        <option value="mr-IN" {% if CURRENT_LANG == 'mr' %}selected{% endif %}>Marathi</option>
+        <option value="bn-IN" {% if CURRENT_LANG == 'bn' %}selected{% endif %}>Bangla</option>
+        <option value="ta-IN" {% if CURRENT_LANG == 'ta' %}selected{% endif %}>Tamil</option>
+        <option value="te-IN" {% if CURRENT_LANG == 'te' %}selected{% endif %}>Telugu</option>
+        <option value="gu-IN" {% if CURRENT_LANG == 'gu' %}selected{% endif %}>Gujarati</option>
+        <option value="kn-IN" {% if CURRENT_LANG == 'kn' %}selected{% endif %}>Kannada</option>
+        <option value="ml-IN" {% if CURRENT_LANG == 'ml' %}selected{% endif %}>Malayalam</option>
+        <option value="pa-IN" {% if CURRENT_LANG == 'pa' %}selected{% endif %}>Punjabi</option>
+        <option value="or-IN" {% if CURRENT_LANG == 'or' %}selected{% endif %}>Odia</option>
+        <option value="as-IN" {% if CURRENT_LANG == 'as' %}selected{% endif %}>Assamese</option>
+        <option value="ur-IN" {% if CURRENT_LANG == 'ur' %}selected{% endif %}>Urdu</option>
+        <option value="ne-NP" {% if CURRENT_LANG == 'ne' %}selected{% endif %}>Nepali</option>
+        <option value="bho-IN" {% if CURRENT_LANG == 'bho' %}selected{% endif %}>Bhojpuri</option>
+        <option value="mai-IN" {% if CURRENT_LANG == 'mai' %}selected{% endif %}>Maithili</option>
+        <option value="kok-IN" {% if CURRENT_LANG == 'kok' %}selected{% endif %}>Konkani</option>
+        <option value="doi-IN" {% if CURRENT_LANG == 'doi' %}selected{% endif %}>Dogri</option>
+        <option value="sa-IN" {% if CURRENT_LANG == 'sa' %}selected{% endif %}>Sanskrit</option>
+        <option value="sd-IN" {% if CURRENT_LANG == 'sd' %}selected{% endif %}>Sindhi</option>
+        <option value="ks-IN" {% if CURRENT_LANG == 'ks' %}selected{% endif %}>Kashmiri</option>
+        <option value="mni-IN" {% if CURRENT_LANG == 'mni' %}selected{% endif %}>Meitei (Manipuri)</option>
+        <option value="brx-IN" {% if CURRENT_LANG == 'brx' %}selected{% endif %}>Bodo</option>
+        <option value="sat-IN" {% if CURRENT_LANG == 'sat' %}selected{% endif %}>Santali</option>
       </select>
     </div>
     <div class="ks-help-messages" data-help-messages role="log" aria-live="polite" aria-label="Help conversation"></div>
@@ -77,7 +92,7 @@
 
 <script src="https://unpkg.com/lucide@0.460.0/dist/umd/lucide.min.js"></script>
 <script src="{% static 'js/kaamsetu.js' %}?v=2"></script>
-<script src="{% static 'js/assist.js' %}?v=2"></script>
+<script src="{% static 'js/assist.js' %}?v=3"></script>
 {% block scripts %}{% endblock %}
 </body>
 </html>
