@@ -4,6 +4,7 @@
   var root = document.querySelector('[data-help-widget]');
   var SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   var activeRecognition = null;
+  var activeVoiceSession = null;
 
   function voiceLanguage() {
     var picker = document.querySelector('[data-voice-language]');
