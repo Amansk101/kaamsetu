@@ -78,6 +78,23 @@
   </aside>
 </form>
 
+<section class="dashboard-panel sample-skill-video">
+  <div class="panel-heading">
+    <div>
+      <span class="eyebrow">{% t "Sample video" %}</span>
+      <h2>{% t "See an example skill video" %}</h2>
+    </div>
+    <a class="button button-secondary" href="{% static 'videos/worker-skill-sample.mp4' %}" download="kaamsetu-worker-skill-sample.mp4">
+      <i data-lucide="download"></i> {% t "Download sample" %}
+    </a>
+  </div>
+  <p class="ks-muted">{% t "Watch this sample to see how a worker can demonstrate a practical skill before uploading their own video." %}</p>
+  <video controls playsinline preload="metadata" aria-label="{% t 'Sample worker skill demonstration video' %}">
+    <source src="{% static 'videos/worker-skill-sample.mp4' %}" type="video/mp4">
+    {% t "Your browser does not support video playback." %}
+  </video>
+</section>
+
 {% if assessments %}
 <section class="dashboard-panel">
   <div class="panel-heading">
